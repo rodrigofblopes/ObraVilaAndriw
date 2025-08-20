@@ -1,0 +1,184 @@
+# 🏗️ Extrator IFC para Dashboard de Volume de Aço
+
+## 📋 Guia Completo de Instalação e Uso
+
+Este sistema permite extrair automaticamente informações de arquivos IFC (Industry Foundation Classes) e gerar dashboards interativos para visualização do volume de aço estrutural em projetos de construção.
+
+---
+
+## 🚀 Instalação Rápida
+
+### Passo 1: Verificar Requisitos
+- **Python 3.8+** instalado no sistema
+- **pip** (gerenciador de pacotes Python)
+- Arquivo IFC do seu projeto estrutural
+
+### Passo 2: Baixar os Arquivos
+Salve todos os arquivos Python em uma pasta do seu projeto:
+- `ifc_extractor.py` (extrator principal)
+- `exemplo_uso.py` (exemplos de uso)
+- `setup.py` (script de configuração)
+- `requirements.txt` (dependências)
+
+### Passo 3: Executar Configuração Automática
+```bash
+python setup.py
+```
+Escolha a opção **1 - Configuração completa** e siga as instruções.
+
+---
+
+## 📁 Estrutura de Arquivos
+
+Após a instalação, sua pasta deve conter:
+```
+projeto/
+├── ifc_extractor.py          # Extrator principal
+├── exemplo_uso.py            # Exemplos de uso
+├── setup.py                  # Script de configuração
+├── requirements.txt          # Dependências Python
+├── venv_ifc/                 # Ambiente virtual Python
+├── dashboard_template.html   # Template do dashboard
+├── config.json              # Configurações
+├── README.md                # Documentação
+└── seu_arquivo.ifc          # Seu arquivo IFC
+```
+
+---
+
+## 🎯 Uso Básico
+
+### Método 1: Linha de Comando (Simples)
+```bash
+# Ativar ambiente virtual
+source venv_ifc/bin/activate  # Linux/Mac
+# OU
+venv_ifc\Scripts\activate     # Windows
+
+# Extrair dados do arquivo IFC
+python ifc_extractor.py meu_projeto.ifc -o dados_aco.json
+```
+
+### Método 2: Com Dashboard HTML
+```bash
+python ifc_extractor.py meu_projeto.ifc \
+  -t dashboard_template.html \
+  -d dashboard_final.html \
+  -o dados_completos.json
+```
+
+### Método 3: Modo Interativo (Recomendado)
+```bash
+python exemplo_uso.py
+```
+Escolha as opções do menu para diferentes tipos de análise.
+
+---
+
+## 📊 O que o Sistema Extrai
+
+### Informações Básicas
+- **Peso total de aço** em kg
+- **Número de pavimentos** 
+- **Tipos de bitolas** utilizadas
+- **Distribuição por elementos** (pilares, vigas, lajes, sapatas)
+
+### Análises Detalhadas
+- **Por Pavimento**: Peso de aço em cada andar
+- **Por Bitola**: Distribuição de peso por diâmetro de armadura
+- **Por Elemento**: Peso por tipo de elemento estrutural
+- **Metragem**: Comprimento linear de vigas
+
+### Dados Gerados
+- **JSON**: Dados estruturados para integração
+- **HTML**: Dashboard visual interativo
+- **TXT**: Relatório detalhado para impressão
+
+---
+
+## 🔧 Configuração Avançada
+
+### Personalizando Taxas de Armadura
+Edite o arquivo `config.json`:
+```json
+{
+  "taxas_armadura": {
+    "pilares": 120,    // kg de aço por m³ de concreto
+    "vigas": 100,
+    "lajes": 60,
+    "sapatas": 80,
+    "paredes": 40
+  }
+}
+```
+
+### Alterando Distribuição de Bitolas
+```json
+{
+  "distribuicao_bitolas": {
+    "pilares": {
+      "5.0 mm": 0.15,    // 15% da armadura total
+      "8.0 mm": 0.30,    // 30% da armadura total
+      "10.0 mm": 0.25,   // 25% da armadura total
+      "12.5 mm": 0.20    // 20% da armadura total
+    }
+  }
+}
+```
+
+---
+
+## 📈 Exemplos de Saída
+
+### Dashboard Visual
+O sistema gera um dashboard HTML moderno com:
+- 📊 Cards com estatísticas principais
+- 📋 Tabelas por pavimento
+- 🔧 Gráficos por bitola
+- 🏗️ Resumo por elemento
+
+### Dados JSON
+```json
+{
+  "projeto": "Vila Andriw",
+  "data_atualizacao": "2025-01-13 08:30:00",
+  "volume_aco": {
+    "resumo": {
+      "peso_total": 3296.68,
+      "pavimentos": 3,
+      "bitolas_diferentes": 5
+    },
+    "por_pavimento": [
+      {
+        "pavimento": "Fundação",
+        "peso_total": 1072.81,
+        "elementos": [...]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 🛠️ Solução de Problemas
+
+### Erro: "Módulo ifcopenshell não encontrado"
+```bash
+# Ativar ambiente virtual primeiro
+source venv_ifc/bin/activate
+pip install ifcopenshell
+```
+
+### Erro: "Arquivo IFC não pode ser lido"
+- Verifique se o arquivo tem extensão `.ifc`
+- Confirme que o arquivo não está corrompido
+- Teste com outro arquivo IFC
+
+### Dashboard não carrega corretamente
+- Verifique se o arquivo JSON foi gerado
+- Confirme que o template HTML existe
+- Abra o console do navegador para ver erros
+
+### Resultados inconsistentes
+- Verifique se o modelo IFC tem ele

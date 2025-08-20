@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VilaAndriw - Volume de Concreto da Obra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #666;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .main-content {
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            text-align: center;
+        }
+
+        .pavimento-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .pavimento-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pavimento-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pavimento-volume {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .elemento-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+
+        .elemento-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .elemento-item:last-child {
+            border-bottom: none;
+        }
+
+        .elemento-name {
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .elemento-icon {
+            font-size: 1.2em;
+        }
+
+        .elemento-volume {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .elementos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .elemento-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #28a745;
+            transition: all 0.3s ease;
+        }
+
+        .elemento-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .elemento-card-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .elemento-card-volume {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .elemento-card-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .update-info {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .elementos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏗️ VilaAndriw</h1>
+            <p>Volume de Concreto da Obra - Análise Detalhada</p>
+        </div>
+
+        <!-- Estatísticas Gerais -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number" id="total-volume">0</div>
+                <div class="stat-label">Volume Total (m³)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-pavimentos">0</div>
+                <div class="stat-label">Pavimentos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="media-volume">0</div>
+                <div class="stat-label">Média por Pavimento (m³)</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            <!-- Volume por Pavimento -->
+            <div class="section">
+                <h2>📊 Volume por Pavimento</h2>
+                <div id="pavimentos-container">
+                    <!-- Pavimentos serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo Detalhado -->
+        <div class="summary-section">
+            <h2>📋 Resumo Detalhado por Elemento</h2>
+            <div class="elementos-grid" id="elementos-detalhados">
+                <!-- Elementos detalhados serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Informações de Atualização -->
+        <div class="update-info">
+            <p>📅 Última atualização: <span id="data-atualizacao">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Dados do volume de concreto (embutidos no HTML)
+        const dadosConcreto = {
+            "projeto": "VilaAndriw",
+            "data_atualizacao": "2025-01-13 08:30:00",
+            "volume_concreto": {
+                "resumo": {
+                    "volume_total": 245.8,
+                    "pavimentos": 3
+                },
+                "por_pavimento": [
+                    {
+                        "pavimento": "Fundação",
+                        "volume_total": 85.2,
+                        "elementos": [
+                            {"tipo": "Sapatas", "volume": 45.8, "icon": "🔲"},
+                            {"tipo": "Viga Baldrame", "volume": 32.4, "icon": "📏"},
+                            {"tipo": "Pilares Fundação", "volume": 7.0, "icon": "🏛️"}
+                        ]
+                    },
+                    {
+                        "pavimento": "Pavimento Térreo",
+                        "volume_total": 95.6,
+                        "elementos": [
+                            {"tipo": "Pilares Térreo", "volume": 12.8, "icon": "🏛️"},
+                            {"tipo": "Vigas Térreo", "volume": 28.4, "icon": "📏"},
+                            {"tipo": "Laje Térreo", "volume": 54.4, "icon": "🏢"}
+                        ]
+                    },
+                    {
+                        "pavimento": "Pavimento Superior",
+                        "volume_total": 65.0,
+                        "elementos": [
+                            {"tipo": "Pilares Superior", "volume": 8.2, "icon": "🏛️"},
+                            {"tipo": "Vigas Superior", "volume": 18.6, "icon": "📏"},
+                            {"tipo": "Laje Superior", "volume": 38.2, "icon": "🏢"}
+                        ]
+                    }
+                ],
+                "por_elemento": [
+                    {"tipo": "Sapatas", "volume": 45.8, "icon": "🔲", "descricao": "Fundação direta"},
+                    {"tipo": "Viga Baldrame", "volume": 32.4, "icon": "📏", "descricao": "Viga de fundação"},
+                    {"tipo": "Pilares Fundação", "volume": 7.0, "icon": "🏛️", "descricao": "Pilares enterrados"},
+                    {"tipo": "Pilares Térreo", "volume": 12.8, "icon": "🏛️", "descricao": "Pilares do térreo"},
+                    {"tipo": "Vigas Térreo", "volume": 28.4, "icon": "📏", "descricao": "Vigas do térreo"},
+                    {"tipo": "Laje Térreo", "volume": 54.4, "icon": "🏢", "descricao": "Laje do térreo"},
+                    {"tipo": "Pilares Superior", "volume": 8.2, "icon": "🏛️", "descricao": "Pilares do superior"},
+                    {"tipo": "Vigas Superior", "volume": 18.6, "icon": "📏", "descricao": "Vigas do superior"},
+                    {"tipo": "Laje Superior", "volume": 38.2, "icon": "🏢", "descricao": "Laje do superior"}
+                ]
+            }
+        };
+
+        // Função para animar números
+        function animateNumber(element, target, duration = 1500) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = current.toFixed(1);
+            }, 16);
+        }
+
+        // Função para renderizar pavimentos
+        function renderizarPavimentos() {
+            const container = document.getElementById('pavimentos-container');
+            const pavimentos = dadosConcreto.volume_concreto.por_pavimento;
+            
+            pavimentos.forEach(pavimento => {
+                const card = document.createElement('div');
+                card.className = 'pavimento-card';
+                
+                let elementosHTML = '';
+                pavimento.elementos.forEach(elemento => {
+                    elementosHTML += `
+                        <div class="elemento-item">
+                            <div class="elemento-name">
+                                <span class="elemento-icon">${elemento.icon}</span>
+                                ${elemento.tipo}
+                            </div>
+                            <div class="elemento-volume">${elemento.volume.toFixed(1)} m³</div>
+                        </div>
+                    `;
+                });
+                
+                card.innerHTML = `
+                    <div class="pavimento-title">
+                        ${pavimento.pavimento}
+                        <span class="pavimento-volume">${pavimento.volume_total.toFixed(1)} m³</span>
+                    </div>
+                    ${elementosHTML}
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Função para renderizar elementos detalhados
+        function renderizarElementosDetalhados() {
+            const container = document.getElementById('elementos-detalhados');
+            const elementos = dadosConcreto.volume_concreto.por_elemento;
+            
+            elementos.forEach(elemento => {
+                const card = document.createElement('div');
+                card.className = 'elemento-card';
+                
+                card.innerHTML = `
+                    <div class="elemento-card-title">
+                        <span class="elemento-icon">${elemento.icon}</span>
+                        ${elemento.tipo}
+                    </div>
+                    <div class="elemento-card-volume">${elemento.volume.toFixed(1)} m³</div>
+                    <div class="elemento-card-details">${elemento.descricao}</div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Função para inicializar a página
+        function inicializarPagina() {
+            const dados = dadosConcreto.volume_concreto;
+            
+            // Animar estatísticas gerais
+            animateNumber(document.getElementById('total-volume'), dados.resumo.volume_total);
+            document.getElementById('total-pavimentos').textContent = dados.resumo.pavimentos;
+            animateNumber(document.getElementById('media-volume'), dados.resumo.volume_total / dados.resumo.pavimentos);
+            
+            // Renderizar conteúdo
+            renderizarPavimentos();
+            renderizarElementosDetalhados();
+            
+            // Atualizar data
+            document.getElementById('data-atualizacao').textContent = dadosConcreto.data_atualizacao;
+        }
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', inicializarPagina);
+    </script>
+</body>
+</html>

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Vila Andriw - Análise por Pavimentos</title>
+    
+    <!-- CSS Frameworks -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+            --light-bg: #f8fafc;
+            --dark-bg: #1e293b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .main-container {
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs-custom {
+            background: var(--light-bg);
+            padding: 1rem 0;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .nav-tabs-custom .nav-link {
+            color: #6b7280;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius);
+            margin: 0 0.25rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-tabs-custom .nav-link:hover:not(.active) {
+            background: #e5e7eb;
+            color: var(--primary-color);
+        }
+
+        .pavimento-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .pavimento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .pavimento-card.subsolo {
+            border-left-color: #8b5cf6;
+        }
+
+        .pavimento-card.terreo {
+            border-left-color: var(--success-color);
+        }
+
+        .pavimento-card.tipo {
+            border-left-color: var(--secondary-color);
+        }
+
+        .pavimento-card.cobertura {
+            border-left-color: var(--warning-color);
+        }
+
+        .pavimento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pavimento-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .pavimento-cost {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .elemento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .elemento-item {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .elemento-item:hover {
+            border-color: var(--secondary-color);
+            background: #eff6ff;
+        }
+
+        .elemento-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .elemento-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .elemento-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .elemento-unit {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .summary-card.total {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .summary-card.material {
+            background: linear-gradient(135deg, var(--info-color), #0891b2);
+            color: white;
+        }
+
+        .summary-card.mao-obra {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--card-shadow);
+            max-height: 450px;
+        }
+        
+        .chart-container canvas {
+            max-height: 300px !important;
+            height: 300px !important;
+        }
+
+        .chart-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .filters-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .btn-filter {
+            margin: 0.25rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--secondary-color);
+            background: white;
+            color: var(--secondary-color);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-filter.active,
+        .btn-filter:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1.5rem 0;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .pavimento-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .elemento-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="container">
+                <div class="text-center">
+                    <h1><i class="fas fa-building"></i> Projeto Vila Andriw</h1>
+                    <p class="subtitle">Dashboard de Análise por Pavimentos e Elementos</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs-custom">
+            <div class="container">
+                <ul class="nav nav-tabs justify-content-center" id="mainTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#visao-geral">
+                            <i class="fas fa-home"></i> Visão Geral
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#por-pavimento">
+                            <i class="fas fa-layer-group"></i> Por Pavimento
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#por-elemento">
+                            <i class="fas fa-cubes"></i> Por Elemento
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#analise-custos">
+                            <i class="fas fa-chart-pie"></i> Análise de Custos
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#visualizacao-3d">
+                            <i class="fas fa-cube"></i> Visualização 3D
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container my-4">
+            <div class="tab-content" id="mainTabContent">
+                
+                <!-- Visão Geral -->
+                <div class="tab-pane fade show active" id="visao-geral">
+                    <h2 class="section-title">📊 Resumo Executivo do Projeto</h2>
+                    
+                    <div class="summary-cards">
+                        <div class="summary-card total">
+                            <div class="summary-value" id="custo-total">R$ 126.544,18</div>
+                            <div class="summary-label">Custo Total do Projeto</div>
+                        </div>
+                        <div class="summary-card material">
+                            <div class="summary-value" id="custo-material">R$ 93.845,16</div>
+                            <div class="summary-label">Materiais (74,2%)</div>
+                        </div>
+                        <div class="summary-card mao-obra">
+                            <div class="summary-value" id="custo-mao-obra">R$ 32.699,02</div>
+                            <div class="summary-label">Mão de Obra (25,8%)</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Distribuição de Custos por Pavimento</h3>
+                                <canvas id="custoPavimentoChart" width="400" height="250"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Participação por Elemento Estrutural</h3>
+                                <canvas id="elementoGeralChart" width="400" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Por Pavimento -->
+                <div class="tab-pane fade" id="por-pavimento">
+                    <h2 class="section-title">🏢 Análise Detalhada por Pavimento</h2>
+                    
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <div class="filter-label">Filtrar por Pavimento:</div>
+                            <button class="btn btn-filter active" onclick="filtrarPavimento('todos')">Todos</button>
+                            <button class="btn btn-filter" onclick="filtrarPavimento('fundacao')">Fundação</button>
+                            <button class="btn btn-filter" onclick="filtrarPavimento('terreo')">Térreo</button>
+                            <button class="btn btn-filter" onclick="filtrarPavimento('superior')">Pavimento Superior</button>
+                        </div>
+                    </div>
+
+                    <div id="pavimentos-container">
+                        <!-- Cards dos pavimentos serão inseridos aqui via JavaScript -->
+                    </div>
+
+                    <div class="chart-container">
+                        <h3 class="chart-title">Comparativo de Custos entre Pavimentos</h3>
+                        <canvas id="comparativoPavimentosChart" width="400" height="250"></canvas>
+                    </div>
+                </div>
+
+                <!-- Por Elemento -->
+                <div class="tab-pane fade" id="por-elemento">
+                    <h2 class="section-title">🔧 Análise por Elemento Estrutural</h2>
+                    
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <div class="filter-label">Filtrar por Elemento:</div>
+                            <button class="btn btn-filter active" onclick="filtrarElemento('todos')">Todos</button>
+                            <button class="btn btn-filter" onclick="filtrarElemento('vigas')">Vigas</button>
+                            <button class="btn btn-filter" onclick="filtrarElemento('pilares')">Pilares</button>
+                            <button class="btn btn-filter" onclick="filtrarElemento('lajes')">Lajes</button>
+                            <button class="btn btn-filter" onclick="filtrarElemento('fundacoes')">Fundações</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Distribuição de Elementos por Pavimento</h3>
+                                <canvas id="elementoPavimentoChart" width="400" height="220"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Peso dos Elementos no Projeto</h3>
+                                <canvas id="pesoElementosChart" width="300" height="220"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="elementos-detalhes-container">
+                        <!-- Detalhes dos elementos serão inseridos aqui -->
+                    </div>
+                </div>
+
+                <!-- Análise de Custos -->
+                <div class="tab-pane fade" id="analise-custos">
+                    <h2 class="section-title">💰 Análise Financeira Detalhada</h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Material vs Mão de Obra por Pavimento</h3>
+                                <canvas id="materialMaoObraChart" width="400" height="220"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Evolução de Custos Acumulados</h3>
+                                <canvas id="custosAcumuladosChart" width="400" height="220"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3 class="chart-title">Detalhamento de Custos por Item</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="custos-detalhados-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Pavimento</th>
+                                        <th>Elemento</th>
+                                        <th>Serviço</th>
+                                        <th>Unidade</th>
+                                        <th>Quantidade</th>
+                                        <th>Valor Unitário</th>
+                                        <th>Valor Total</th>
+                                        <th>% do Projeto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dados serão inseridos via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualização 3D -->
+                <div class="tab-pane fade" id="visualizacao-3d">
+                    <h2 class="section-title">🏗️ Visualização 3D da Estrutura</h2>
+                    
+                    <!-- Controles de Upload e Visualização -->
+                    <div class="chart-container">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-cube"></i> Modelo 3D - Vila Andriw
+                                </h3>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-info-circle"></i> 
+                                    VilaAndriw.ifc detectado na pasta - use seleção manual (limitação do navegador)
+                                </p>
+                            </div>
+                            <div class="col-lg-4 text-end">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="selecionarArquivoLocal()">
+                                        <i class="fas fa-hand-pointer"></i> Selecionar VilaAndriw.ifc
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="carregarModeloPadrao()">
+                                        <i class="fas fa-sync-alt"></i> Tentar Automático
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetarVisualizacao()">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="capturarScreenshot()">
+                                        <i class="fas fa-camera"></i> Screenshot
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Input file oculto -->
+                        <input type="file" id="ifc-file-input" accept=".ifc" style="display: none;" onchange="processarArquivoIFC(this.files[0])">
+                        
+                        <!-- Container da visualização 3D -->
+                        <div id="ifc-viewer-container" style="width: 100%; height: 500px; border: 2px solid #e5e7eb; border-radius: 8px; position: relative; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                            <div id="loading-3d" class="d-flex align-items-center justify-content-center h-100" style="display: none !important;">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h5>Processando arquivo IFC...</h5>
+                                        <p class="text-muted">Aguarde enquanto o modelo 3D é carregado</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="viewer-placeholder" class="d-flex align-items-center justify-content-center h-100">
+                                <div class="text-center">
+                                    <i class="fas fa-building fa-4x text-primary mb-3"></i>
+                                    <h4 class="text-primary">Visualizador IFC - Vila Andriw</h4>
+                                    <p class="text-muted">Arquivo VilaAndriw.ifc detectado na pasta</p>
+                                    <div class="mt-4">
+                                        <button class="btn btn-primary btn-lg" onclick="selecionarArquivoLocal()">
+                                            <i class="fas fa-hand-pointer me-2"></i> Selecionar VilaAndriw.ifc
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle"></i> 
+                                            Navegadores bloqueiam acesso automático por segurança - use seleção manual
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controles de Visualização -->
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h4 class="chart-title">🎛️ Controles de Visualização</h4>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Opacidade dos Elementos</label>
+                                            <input type="range" class="form-range" id="opacity-slider" min="0" max="100" value="100" onchange="ajustarOpacidade(this.value)">
+                                            <small class="text-muted">0% - 100%</small>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Velocidade de Rotação</label>
+                                            <input type="range" class="form-range" id="rotation-speed" min="0" max="5" value="1" step="0.1" onchange="ajustarVelocidadeRotacao(this.value)">
+                                            <small class="text-muted">Lenta - Rápida</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Modo de Visualização</label>
+                                            <select class="form-select" id="view-mode" onchange="alterarModoVisualizacao(this.value)">
+                                                <option value="solid">Sólido</option>
+                                                <option value="wireframe">Wireframe</option>
+                                                <option value="transparent">Transparente</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="auto-rotation" onchange="alternarRotacaoAutomatica(this.checked)">
+                                            <label class="form-check-label" for="auto-rotation">
+                                                Rotação Automática
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h4 class="chart-title">📋 Informações do Modelo</h4>
+                                <div id="model-info">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-2">
+                                                <strong>Arquivo:</strong>
+                                                <span id="file-name">VilaAndriw.ifc</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Tamanho:</strong>
+                                                <span id="file-size">Verificando...</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Elementos:</strong>
+                                                <span id="elements-count">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-2">
+                                                <strong>Materiais:</strong>
+                                                <span id="materials-count">Extraindo...</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Tipo:</strong>
+                                                <span id="ifc-version">Arquivo IFC da Pasta</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Status:</strong>
+                                                <span id="loading-status" class="badge bg-warning">Preparando carregamento...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filtros de Elementos -->
+                    <div class="chart-container">
+                        <h4 class="chart-title">🔍 Filtros de Elementos</h4>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="btn-group" role="group" aria-label="Filtros de elementos">
+                                    <input type="checkbox" class="btn-check" id="show-walls" checked onchange="toggleElementVisibility('walls', this.checked)">
+                                    <label class="btn btn-outline-primary" for="show-walls">
+                                        <i class="fas fa-square"></i> Paredes
+                                    </label>
+
+                                    <input type="checkbox" class="btn-check" id="show-columns" checked onchange="toggleElementVisibility('columns', this.checked)">
+                                    <label class="btn btn-outline-primary" for="show-columns">
+                                        <i class="fas fa-columns"></i> Pilares
+                                    </label>
+
+                                    <input type="checkbox" class="btn-check" id="show-beams" checked onchange="toggleElementVisibility('beams', this.checked)">
+                                    <label class="btn btn-outline-primary" for="show-beams">
+                                        <i class="fas fa-minus"></i> Vigas
+                                    </label>
+
+                                    <input type="checkbox" class="btn-check" id="show-slabs" checked onchange="toggleElementVisibility('slabs', this.checked)">
+                                    <label class="btn btn-outline-primary" for="show-slabs">
+                                        <i class="fas fa-square-full"></i> Lajes
+                                    </label>
+
+                                    <input type="checkbox" class="btn-check" id="show-foundations" checked onchange="toggleElementVisibility('foundations', this.checked)">
+                                    <label class="btn btn-outline-primary" for="show-foundations">
+                                        <i class="fas fa-layer-group"></i> Fundações
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Three.js para visualização 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Carregador robusto de bibliotecas IFC -->
+    <script>
+        // Sistema robusto de carregamento de bibliotecas IFC
+        class IFCLibraryLoader {
+            constructor() {
+                this.attempts = 0;
+                this.maxAttempts = 3;
+                this.loadedLibraries = {
+                    webIFC: false,
+                    ifcLoader: false
+                };
+                
+                // Múltiplos CDNs para fallback
+                this.cdnSources = {
+                    webIFC: [
+                        'https://unpkg.com/web-ifc@0.0.36/web-ifc-api.js',
+                        'https://cdn.jsdelivr.net/npm/web-ifc@0.0.36/web-ifc-api.js',
+                        'https://cdn.skypack.dev/web-ifc@0.0.36/web-ifc-api.js'
+                    ],
+                    ifcLoader: [
+                        'https://unpkg.com/web-ifc-three@0.0.118/IFCLoader.js',
+                        'https://cdn.jsdelivr.net/npm/web-ifc-three@0.0.118/IFCLoader.js',
+                        'https://raw.githubusercontent.com/IFCjs/web-ifc-three/main/dist/IFCLoader.js'
+                    ]
+                };
+            }
+            
+            log(message, type = 'info') {
+                const emoji = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+                console.log(`${emoji} IFC Libs: ${message}`);
+            }
+            
+            async loadScript(url, timeout = 10000) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = url;
+                    script.async = true;
+                    
+                    const timeoutId = setTimeout(() => {
+                        script.remove();
+                        reject(new Error(`Timeout ao carregar ${url}`));
+                    }, timeout);
+                    
+                    script.onload = () => {
+                        clearTimeout(timeoutId);
+                        this.log(`Biblioteca carregada: ${url}`, 'success');
+                        resolve();
+                    };
+                    
+                    script.onerror = () => {
+                        clearTimeout(timeoutId);
+                        script.remove();
+                        reject(new Error(`Erro ao carregar ${url}`));
+                    };
+                    
+                    document.head.appendChild(script);
+                });
+            }
+            
+            async loadLibraryWithFallback(libraryName, sources) {
+                for (let i = 0; i < sources.length; i++) {
+                    const url = sources[i];
+                    this.log(`Tentando carregar ${libraryName} de: ${url}`);
+                    
+                    try {
+                        await this.loadScript(url);
+                        this.loadedLibraries[libraryName] = true;
+                        return true;
+                    } catch (error) {
+                        this.log(`Falha ao carregar de ${url}: ${error.message}`, 'warning');
+                        
+                        if (i === sources.length - 1) {
+                            this.log(`TODAS as fontes de ${libraryName} falharam!`, 'error');
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            async loadAllLibraries() {
+                this.log('Iniciando carregamento das bibliotecas IFC...');
+                
+                try {
+                    // Carrega Web-IFC primeiro
+                    this.log('Carregando Web-IFC...');
+                    const webIFCLoaded = await this.loadLibraryWithFallback('webIFC', this.cdnSources.webIFC);
+                    
+                    if (!webIFCLoaded) {
+                        throw new Error('Falha ao carregar Web-IFC de todas as fontes');
+                    }
+                    
+                    // Aguarda um pouco para Web-IFC inicializar
+                    await this.sleep(1000);
+                    
+                    // Carrega IFCLoader depois
+                    this.log('Carregando IFCLoader...');
+                    const ifcLoaderLoaded = await this.loadLibraryWithFallback('ifcLoader', this.cdnSources.ifcLoader);
+                    
+                    if (!ifcLoaderLoaded) {
+                        throw new Error('Falha ao carregar IFCLoader de todas as fontes');
+                    }
+                    
+                    // Aguarda inicialização completa
+                    await this.sleep(500);
+                    
+                    // Verifica se bibliotecas estão disponíveis
+                    const webIFCAvailable = typeof WebIFC !== 'undefined';
+                    const ifcLoaderAvailable = typeof THREE !== 'undefined' && typeof THREE.IFCLoader !== 'undefined';
+                    
+                    this.log(`Web-IFC disponível: ${webIFCAvailable ? '✅' : '❌'}`);
+                    this.log(`IFCLoader disponível: ${ifcLoaderAvailable ? '✅' : '❌'}`);
+                    
+                    if (webIFCAvailable && ifcLoaderAvailable) {
+                        this.log('SUCESSO! Todas as bibliotecas IFC carregadas!', 'success');
+                        
+                        // Dispara evento personalizado
+                        window.dispatchEvent(new CustomEvent('ifcLibrariesLoaded'));
+                        return true;
+                    } else {
+                        throw new Error('Bibliotecas carregadas mas não disponíveis');
+                    }
+                    
+                } catch (error) {
+                    this.log(`ERRO no carregamento: ${error.message}`, 'error');
+                    
+                    // Dispara evento de erro
+                    window.dispatchEvent(new CustomEvent('ifcLibrariesError', { 
+                        detail: { error: error.message } 
+                    }));
+                    return false;
+                }
+            }
+            
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+        
+        // Inicia carregamento das bibliotecas IFC
+        const ifcLibLoader = new IFCLibraryLoader();
+        
+        // Aguarda Three.js estar pronto
+        if (typeof THREE !== 'undefined') {
+            ifcLibLoader.loadAllLibraries();
+        } else {
+            window.addEventListener('load', () => {
+                setTimeout(() => ifcLibLoader.loadAllLibraries(), 1000);
+            });
+        }
+    </script>
+    
+    <script src="dashboard-vila-andriw.js"></script>
+    <script src="ifc-real-loader.js"></script>
+</body>
+</html>
