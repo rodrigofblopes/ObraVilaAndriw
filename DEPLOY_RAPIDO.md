@@ -1,73 +1,75 @@
-# 🚀 Deploy Rápido - Dashboard Vila Andriw
+# 🚀 **DEPLOY RÁPIDO - VILA ANDRIW STREAMLIT**
 
-## 🎯 3 Passos para Deploy
+## ⚡ **OPÇÃO 1: Script Automático (Recomendado)**
 
-### 1️⃣ Teste Local (Opcional)
-```bash
-python run_app.py
-# Ou diretamente:
-streamlit run app.py
+### **🪟 Windows Batch**
+```cmd
+deploy_github.bat
 ```
 
-### 2️⃣ Deploy Streamlit Cloud (Recomendado)
-1. **Suba para GitHub**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Dashboard Vila Andriw"
-   git remote add origin https://github.com/SEU-USUARIO/dashboard-vila-andriw
-   git push -u origin main
-   ```
-
-2. **Deploy**: 
-   - Acesse [share.streamlit.io](https://share.streamlit.io)
-   - Conecte GitHub → Selecione repositório → Deploy!
-
-### 3️⃣ Resultado
-✅ **URL pública**: `https://seu-usuario-dashboard-vila-andriw-app-xxxxx.streamlit.app/`
-
-## 📁 Arquivos Necessários (✅ Todos Criados)
-
-- ✅ `app.py` - Aplicação principal
-- ✅ `requirements.txt` - Dependências
-- ✅ `.streamlit/config.toml` - Configurações
-- ✅ `Procfile` - Para Heroku (opcional)
-
-## 🎊 Funcionalidades da Aplicação
-
-### 🏠 Visão Geral
-- Resumo executivo R$ 126.544,18
-- Gráficos de distribuição
-- Métricas principais
-
-### 🏢 Por Pavimento  
-- Fundação: R$ 42.507,19
-- Térreo: R$ 53.217,60
-- Superior: R$ 30.819,39
-
-### 🔧 Por Elemento
-- Análise vigas/pilares/lajes
-- Tabelas detalhadas
-- Gráficos interativos
-
-### 💰 Análise Detalhada
-- Material vs Mão de Obra
-- Custos acumulados
-- Serviços SINAPI
-
-### 🎮 Visualização 3D
-- Upload de arquivos IFC
-- Interface de controles
-- Informações do modelo
-
-## ⚡ Deploy Express
-
-Para deploy **super rápido** no Streamlit Cloud:
-
-1. **Faça upload** de todos os arquivos para um repositório GitHub
-2. **Conecte** o repositório no [share.streamlit.io](https://share.streamlit.io)
-3. **Pronto!** Aplicação online em minutos
+### **💙 Windows PowerShell**
+```powershell
+.\deploy_github.ps1
+```
 
 ---
 
-**Dashboard pronto para produção** com dados reais do Vila Andriw! 🏗️✨
+## ⚡ **OPÇÃO 2: Manual (3 Comandos)**
+
+### **1️⃣ Criar repositório no GitHub**
+🌐 https://github.com/new
+- **Nome**: `vila-andriw-streamlit`
+- **✅ Public**
+- **❌ Não** adicione arquivos
+
+### **2️⃣ Conectar e enviar**
+```bash
+git remote add origin https://github.com/SEU-USUARIO/vila-andriw-streamlit.git
+git branch -M main
+git push -u origin main
+```
+
+### **3️⃣ Deploy Streamlit**
+🌐 https://share.streamlit.io
+- **Sign in** com GitHub
+- **New app** → Selecionar repositório
+- **Main file**: `app.py`
+- **Deploy!**
+
+---
+
+## 🧹 **Problema com Porta Ocupada?**
+
+```cmd
+limpar_streamlit.bat
+```
+
+---
+
+## 📱 **Resultado Final**
+
+Sua aplicação ficará online em:
+```
+https://SEU-USUARIO-vila-andriw-streamlit-app-XXXXX.streamlit.app/
+```
+
+---
+
+## 🏆 **Funcionalidades do Dashboard**
+
+### 📊 **5 Abas Completas**
+- 🏠 **Visão Geral**: Resumo executivo R$ 126.544,18
+- 🏢 **Por Pavimento**: Fundação, Térreo, Superior
+- 🔧 **Por Elemento**: Vigas, Pilares, Lajes, Fundações
+- 💰 **Análise Detalhada**: 19 serviços completos
+- 🎮 **Visualização 3D**: Modelo IFC real + esquemático
+
+### 🛠️ **Tecnologias**
+- **Streamlit**: Interface web
+- **Plotly**: Gráficos interativos
+- **ifcopenshell**: Modelo 3D real
+- **Pandas**: Análise de dados
+
+---
+
+**🚀 Tempo total de deploy: ~5 minutos**
