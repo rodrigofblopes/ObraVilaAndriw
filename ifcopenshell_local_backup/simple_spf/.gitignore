@@ -1,0 +1,6 @@
+/files/*
+/test/*
+*.txt
+*.json
+*.stp
+__pycache__/

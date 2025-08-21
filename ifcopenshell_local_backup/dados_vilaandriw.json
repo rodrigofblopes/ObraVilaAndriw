@@ -1,0 +1,96 @@
+{
+  "projeto": "Vila Andriw",
+  "data_atualizacao": "2025-08-18 19:35:54",
+  "arquivo_ifc": "VilaAndriw.ifc",
+  "volume_aco": {
+    "resumo": {
+      "peso_total": 24794.0,
+      "volume_concreto_total": 274.7,
+      "pavimentos": 3,
+      "bitolas_diferentes": 6,
+      "elementos_total": 309
+    },
+    "por_pavimento": [
+      {
+        "nome": "Fundação",
+        "peso_aco": 11878.0,
+        "volume_concreto": 128.9,
+        "elementos": 129
+      },
+      {
+        "nome": "Pavimento Superior",
+        "peso_aco": 3078.0,
+        "volume_concreto": 27.9,
+        "elementos": 45
+      },
+      {
+        "nome": "Térreo",
+        "peso_aco": 9838.0,
+        "volume_concreto": 117.9,
+        "elementos": 135
+      }
+    ],
+    "por_bitola": [
+      {
+        "bitola": "5.0 mm",
+        "peso": 4958.8,
+        "percentual": 20.0
+      },
+      {
+        "bitola": "6.3 mm",
+        "peso": 3719.1,
+        "percentual": 15.0
+      },
+      {
+        "bitola": "8.0 mm",
+        "peso": 4958.8,
+        "percentual": 20.0
+      },
+      {
+        "bitola": "10.0 mm",
+        "peso": 4958.8,
+        "percentual": 20.0
+      },
+      {
+        "bitola": "12.5 mm",
+        "peso": 3719.1,
+        "percentual": 15.0
+      },
+      {
+        "bitola": "16.0 mm",
+        "peso": 2479.4,
+        "percentual": 10.0
+      }
+    ],
+    "por_elemento": [
+      {
+        "tipo": "vigas",
+        "peso_aco": 9650.0,
+        "volume_concreto": 96.5,
+        "elementos": 193,
+        "percentual": 38.9
+      },
+      {
+        "tipo": "pilares",
+        "peso_aco": 6144.0,
+        "volume_concreto": 51.2,
+        "elementos": 64,
+        "percentual": 24.8
+      },
+      {
+        "tipo": "sapatas",
+        "peso_aco": 5520.0,
+        "volume_concreto": 69.0,
+        "elementos": 23,
+        "percentual": 22.3
+      },
+      {
+        "tipo": "lajes",
+        "peso_aco": 3480.0,
+        "volume_concreto": 58.0,
+        "elementos": 29,
+        "percentual": 14.0
+      }
+    ]
+  }
+}

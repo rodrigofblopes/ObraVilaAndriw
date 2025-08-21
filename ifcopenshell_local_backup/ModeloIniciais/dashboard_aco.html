@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VilaAndriw - Volume de Aço da Obra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #666;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            text-align: center;
+        }
+
+        .pavimento-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2c3e50;
+            transition: all 0.3s ease;
+        }
+
+        .pavimento-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pavimento-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pavimento-peso {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .elemento-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+
+        .elemento-item:hover {
+            background: rgba(44, 62, 80, 0.05);
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .elemento-item:last-child {
+            border-bottom: none;
+        }
+
+        .elemento-name {
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .elemento-icon {
+            font-size: 1.2em;
+        }
+
+                 .elemento-peso {
+             font-weight: bold;
+             color: #2c3e50;
+             font-size: 1.1em;
+         }
+
+         .elemento-info {
+             background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
+             padding: 8px 12px;
+             margin: 5px 0 10px 0;
+             border-radius: 8px;
+             font-size: 0.9em;
+             color: #0c5460;
+             border-left: 3px solid #17a2b8;
+             font-weight: 500;
+         }
+
+        .bitola-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid #e74c3c;
+            transition: all 0.3s ease;
+        }
+
+        .bitola-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .bitola-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bitola-peso {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .bitola-details {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
+        .elementos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .elemento-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #27ae60;
+            transition: all 0.3s ease;
+        }
+
+        .elemento-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .elemento-card-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .elemento-card-peso {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .elemento-card-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .update-info {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .elementos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔩 VilaAndriw</h1>
+            <p>Volume de Aço da Obra - Análise Detalhada</p>
+        </div>
+
+        <!-- Estatísticas Gerais -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number" id="total-peso">0</div>
+                <div class="stat-label">Peso Total (kg)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-pavimentos">0</div>
+                <div class="stat-label">Pavimentos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-bitolas">0</div>
+                <div class="stat-label">Bitolas Diferentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="media-peso">0</div>
+                <div class="stat-label">Média por Pavimento (kg)</div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            <!-- Peso por Pavimento -->
+            <div class="section">
+                <h2>📊 Peso por Pavimento</h2>
+                <div id="pavimentos-container">
+                    <!-- Pavimentos serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Peso por Bitola -->
+            <div class="section">
+                <h2>🔧 Peso por Bitola</h2>
+                <div id="bitolas-container">
+                    <!-- Bitolas serão inseridas aqui via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo Detalhado -->
+        <div class="section">
+            <h2>📋 Resumo Detalhado por Elemento</h2>
+            <div class="elementos-grid" id="elementos-detalhados">
+                <!-- Elementos detalhados serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Informações de Atualização -->
+        <div class="update-info">
+            <p>📅 Última atualização: <span id="data-atualizacao">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Dados do volume de aço (embutidos no HTML)
+        const dadosAco = {
+            "projeto": "VilaAndriw",
+            "data_atualizacao": "2025-01-13 08:30:00",
+            "volume_aco": {
+                                 "resumo": {
+                     "peso_total": 3296.68,
+                     "pavimentos": 3,
+                     "bitolas_diferentes": 5
+                 },
+                                 "por_pavimento": [
+                     {
+                         "pavimento": "Fundação",
+                         "peso_total": 1072.81,
+                         "elementos": [
+                             {"tipo": "Sapatas", "peso": 268.62, "icon": "🔲"},
+                             {"tipo": "Vigas", "peso": 517.23, "icon": "📏", "metragem": 648.0, "info": "648,0 m lineares - Comprar colunas prontas"},
+                             {"tipo": "Pilares", "peso": 286.96, "icon": "🏛️"}
+                         ]
+                     },
+                     {
+                         "pavimento": "Pavimento Térreo",
+                         "peso_total": 1309.01,
+                         "elementos": [
+                             {"tipo": "Pilares", "peso": 500.16, "icon": "🏛️"},
+                             {"tipo": "Vigas", "peso": 611.86, "icon": "📏"},
+                             {"tipo": "Lajes", "peso": 196.99, "icon": "🏢"}
+                         ]
+                     },
+                     {
+                         "pavimento": "Pavimento Superior",
+                         "peso_total": 914.86,
+                         "elementos": [
+                             {"tipo": "Pilares", "peso": 453.32, "icon": "🏛️"},
+                             {"tipo": "Vigas", "peso": 461.54, "icon": "📏"}
+                         ]
+                     }
+                 ],
+                                 "por_bitola": [
+                     {"bitola": "5.0 mm", "peso": 788.48, "descricao": "Estribos e armaduras secundárias"},
+                     {"bitola": "6.3 mm", "peso": 196.97, "descricao": "Estribos e armaduras secundárias"},
+                     {"bitola": "8.0 mm", "peso": 1302.80, "descricao": "Armaduras principais"},
+                     {"bitola": "10.0 mm", "peso": 614.96, "descricao": "Armaduras principais"},
+                     {"bitola": "12.5 mm", "peso": 393.52, "descricao": "Armaduras principais"}
+                 ],
+                                 "por_elemento": [
+                     {"tipo": "Sapatas", "peso": 268.62, "icon": "🔲", "descricao": "Fundação direta"},
+                     {"tipo": "Pilares", "peso": 1240.44, "icon": "🏛️", "descricao": "Pilares estruturais"},
+                     {"tipo": "Lajes", "peso": 196.99, "icon": "🏢", "descricao": "Lajes estruturais"},
+                     {"tipo": "Vigas", "peso": 1590.63, "icon": "📏", "descricao": "Vigas estruturais"}
+                 ]
+            }
+        };
+
+        // Função para animar números
+        function animateNumber(element, target, duration = 1500) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.round(current).toLocaleString('pt-BR');
+            }, 16);
+        }
+
+        // Função para renderizar pavimentos
+        function renderizarPavimentos() {
+            const container = document.getElementById('pavimentos-container');
+            const pavimentos = dadosAco.volume_aco.por_pavimento;
+            
+            pavimentos.forEach(pavimento => {
+                const card = document.createElement('div');
+                card.className = 'pavimento-card';
+                
+                                 let elementosHTML = '';
+                 pavimento.elementos.forEach(elemento => {
+                     let infoExtra = '';
+                     if (elemento.metragem) {
+                         infoExtra = `<div class="elemento-info">📏 ${elemento.metragem.toLocaleString('pt-BR')} m - ${elemento.info}</div>`;
+                     }
+                     elementosHTML += `
+                         <div class="elemento-item">
+                             <div class="elemento-name">
+                                 <span class="elemento-icon">${elemento.icon}</span>
+                                 ${elemento.tipo}
+                             </div>
+                             <div class="elemento-peso">${elemento.peso.toLocaleString('pt-BR')} kg</div>
+                         </div>
+                         ${infoExtra}
+                     `;
+                 });
+                
+                card.innerHTML = `
+                    <div class="pavimento-title">
+                        ${pavimento.pavimento}
+                        <span class="pavimento-peso">${pavimento.peso_total.toLocaleString('pt-BR')} kg</span>
+                    </div>
+                    ${elementosHTML}
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Função para renderizar bitolas
+        function renderizarBitolas() {
+            const container = document.getElementById('bitolas-container');
+            const bitolas = dadosAco.volume_aco.por_bitola;
+            
+            bitolas.forEach(bitola => {
+                const card = document.createElement('div');
+                card.className = 'bitola-card';
+                
+                card.innerHTML = `
+                    <div class="bitola-title">
+                        ${bitola.bitola}
+                        <span class="bitola-peso">${bitola.peso.toLocaleString('pt-BR')} kg</span>
+                    </div>
+                    <div class="bitola-details">${bitola.descricao}</div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Função para renderizar elementos detalhados
+        function renderizarElementosDetalhados() {
+            const container = document.getElementById('elementos-detalhados');
+            const elementos = dadosAco.volume_aco.por_elemento;
+            
+            elementos.forEach(elemento => {
+                const card = document.createElement('div');
+                card.className = 'elemento-card';
+                
+                card.innerHTML = `
+                    <div class="elemento-card-title">
+                        <span class="elemento-icon">${elemento.icon}</span>
+                        ${elemento.tipo}
+                    </div>
+                    <div class="elemento-card-peso">${elemento.peso.toLocaleString('pt-BR')} kg</div>
+                    <div class="elemento-card-details">${elemento.descricao}</div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Função para inicializar a página
+        function inicializarPagina() {
+            const dados = dadosAco.volume_aco;
+            
+            // Animar estatísticas gerais
+            animateNumber(document.getElementById('total-peso'), dados.resumo.peso_total);
+            document.getElementById('total-pavimentos').textContent = dados.resumo.pavimentos;
+            document.getElementById('total-bitolas').textContent = dados.resumo.bitolas_diferentes;
+            animateNumber(document.getElementById('media-peso'), dados.resumo.peso_total / dados.resumo.pavimentos);
+            
+            // Renderizar conteúdo
+            renderizarPavimentos();
+            renderizarBitolas();
+            renderizarElementosDetalhados();
+            
+            // Atualizar data
+            document.getElementById('data-atualizacao').textContent = dadosAco.data_atualizacao;
+        }
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', inicializarPagina);
+    </script>
+</body>
+</html>

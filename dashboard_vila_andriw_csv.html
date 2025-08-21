@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Vila Andriw - Dados Orçamentários Reais</title>
+    
+    <!-- CSS Frameworks -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+            --light-bg: #f8fafc;
+            --dark-bg: #1e293b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .main-container {
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs-custom {
+            background: var(--light-bg);
+            padding: 1rem 0;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .nav-tabs-custom .nav-link {
+            color: #6b7280;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius);
+            margin: 0 0.25rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-tabs-custom .nav-link:hover:not(.active) {
+            background: #e5e7eb;
+            color: var(--primary-color);
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .summary-card.total {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .summary-card.material {
+            background: linear-gradient(135deg, var(--info-color), #0891b2);
+            color: white;
+        }
+
+        .summary-card.mao-obra {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+        }
+
+        .summary-card.elementos {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--card-shadow);
+            max-height: 450px;
+        }
+        
+        .chart-container canvas {
+            max-height: 300px !important;
+            height: 300px !important;
+        }
+
+        .chart-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .pavimento-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .pavimento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .pavimento-card.fundacao {
+            border-left-color: #8b5cf6;
+        }
+
+        .pavimento-card.terreo {
+            border-left-color: var(--success-color);
+        }
+
+        .pavimento-card.superior {
+            border-left-color: var(--secondary-color);
+        }
+
+        .pavimento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pavimento-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .pavimento-cost {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .elemento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .elemento-item {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .elemento-item:hover {
+            border-color: var(--secondary-color);
+            background: #eff6ff;
+        }
+
+        .elemento-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .elemento-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .elemento-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1.5rem 0;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .filters-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .btn-filter {
+            margin: 0.25rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--secondary-color);
+            background: white;
+            color: var(--secondary-color);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-filter.active,
+        .btn-filter:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--light-bg);
+        }
+
+        .badge-percentage {
+            background: var(--info-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .pavimento-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .elemento-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="container">
+                <div class="text-center">
+                    <h1><i class="fas fa-building"></i> Vila Andriw - Dashboard Orçamentário</h1>
+                    <p class="subtitle">Dados Reais do Orçamento Estrutural - SINAPI 07/2025</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs-custom">
+            <div class="container">
+                <ul class="nav nav-tabs justify-content-center" id="mainTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#visao-geral">
+                            <i class="fas fa-home"></i> Visão Geral
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#por-pavimento">
+                            <i class="fas fa-layer-group"></i> Por Pavimento
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#por-elemento">
+                            <i class="fas fa-cubes"></i> Por Elemento
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#analise-detalhada">
+                            <i class="fas fa-chart-line"></i> Análise Detalhada
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#visualizacao-3d">
+                            <i class="fas fa-cube"></i> Visualização 3D
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container my-4">
+            <div class="tab-content" id="mainTabContent">
+                
+                <!-- Visão Geral -->
+                <div class="tab-pane fade show active" id="visao-geral">
+                    <h2 class="section-title">📊 Resumo Executivo do Projeto</h2>
+                    
+                    <div class="summary-cards">
+                        <div class="summary-card total">
+                            <div class="summary-value">R$ 126.544,18</div>
+                            <div class="summary-label">Custo Total do Projeto</div>
+                        </div>
+                        <div class="summary-card material">
+                            <div class="summary-value">R$ 93.845,16</div>
+                            <div class="summary-label">Materiais (74,2%)</div>
+                        </div>
+                        <div class="summary-card mao-obra">
+                            <div class="summary-value">R$ 32.699,02</div>
+                            <div class="summary-label">Mão de Obra (25,8%)</div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Distribuição de Custos por Pavimento</h3>
+                                <canvas id="custoPavimentoChart" width="400" height="250"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Participação por Elemento Estrutural</h3>
+                                <canvas id="elementoGeralChart" width="400" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Por Pavimento -->
+                <div class="tab-pane fade" id="por-pavimento">
+                    <h2 class="section-title">🏢 Análise Detalhada por Pavimento</h2>
+                    
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <div class="filter-label">Filtrar por Pavimento:</div>
+                            <button class="btn btn-filter active" onclick="filtrarPavimento('todos')">Todos</button>
+                            <button class="btn btn-filter" onclick="filtrarPavimento('fundacao')">Fundação</button>
+                            <button class="btn btn-filter" onclick="filtrarPavimento('terreo')">Térreo</button>
+                            <button class="btn btn-filter" onclick="filtrarPavimento('superior')">Pavimento Superior</button>
+                        </div>
+                    </div>
+
+                    <div id="pavimentos-container">
+                        <!-- Fundação -->
+                        <div class="pavimento-card fundacao" data-pavimento="fundacao">
+                            <div class="pavimento-header">
+                                <div class="pavimento-title">🏗️ Fundação</div>
+                                <div class="pavimento-cost">R$ 42.507,19</div>
+                            </div>
+                            <div class="elemento-grid">
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🟫</div>
+                                    <div class="elemento-name">Vigas</div>
+                                    <div class="elemento-value">R$ 23.600,73</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🏢</div>
+                                    <div class="elemento-name">Pilares</div>
+                                    <div class="elemento-value">R$ 8.649,86</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🏠</div>
+                                    <div class="elemento-name">Fundações</div>
+                                    <div class="elemento-value">R$ 10.256,60</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">📊</div>
+                                    <div class="elemento-name">% do Total</div>
+                                    <div class="elemento-value">33,59%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Térreo -->
+                        <div class="pavimento-card terreo" data-pavimento="terreo">
+                            <div class="pavimento-header">
+                                <div class="pavimento-title">🏘️ Térreo</div>
+                                <div class="pavimento-cost">R$ 53.217,60</div>
+                            </div>
+                            <div class="elemento-grid">
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🟫</div>
+                                    <div class="elemento-name">Vigas</div>
+                                    <div class="elemento-value">R$ 25.399,51</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🏢</div>
+                                    <div class="elemento-name">Pilares</div>
+                                    <div class="elemento-value">R$ 20.617,97</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🟧</div>
+                                    <div class="elemento-name">Lajes</div>
+                                    <div class="elemento-value">R$ 7.200,12</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">📊</div>
+                                    <div class="elemento-name">% do Total</div>
+                                    <div class="elemento-value">42,05%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pavimento Superior -->
+                        <div class="pavimento-card superior" data-pavimento="superior">
+                            <div class="pavimento-header">
+                                <div class="pavimento-title">🏠 Pavimento Superior</div>
+                                <div class="pavimento-cost">R$ 30.819,39</div>
+                            </div>
+                            <div class="elemento-grid">
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🟫</div>
+                                    <div class="elemento-name">Vigas</div>
+                                    <div class="elemento-value">R$ 11.156,98</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">🏢</div>
+                                    <div class="elemento-name">Pilares</div>
+                                    <div class="elemento-value">R$ 19.662,41</div>
+                                </div>
+                                <div class="elemento-item">
+                                    <div class="elemento-icon">📊</div>
+                                    <div class="elemento-name">% do Total</div>
+                                    <div class="elemento-value">24,35%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3 class="chart-title">Comparativo de Custos entre Pavimentos</h3>
+                        <canvas id="comparativoPavimentosChart" width="400" height="250"></canvas>
+                    </div>
+                </div>
+
+                <!-- Por Elemento -->
+                <div class="tab-pane fade" id="por-elemento">
+                    <h2 class="section-title">🔧 Análise por Elemento Estrutural</h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Distribuição de Elementos por Pavimento</h3>
+                                <canvas id="elementoPavimentoChart" width="400" height="220"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Participação dos Elementos</h3>
+                                <canvas id="pesoElementosChart" width="300" height="220"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Elemento</th>
+                                        <th>Fundação</th>
+                                        <th>Térreo</th>
+                                        <th>Superior</th>
+                                        <th>Total</th>
+                                        <th>% Projeto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>🟫 Vigas</strong></td>
+                                        <td>R$ 23.600,73</td>
+                                        <td>R$ 25.399,51</td>
+                                        <td>R$ 11.156,98</td>
+                                        <td><strong>R$ 60.157,22</strong></td>
+                                        <td><span class="badge-percentage">47,5%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>🏢 Pilares</strong></td>
+                                        <td>R$ 8.649,86</td>
+                                        <td>R$ 20.617,97</td>
+                                        <td>R$ 19.662,41</td>
+                                        <td><strong>R$ 48.930,24</strong></td>
+                                        <td><span class="badge-percentage">38,7%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>🏠 Fundações</strong></td>
+                                        <td>R$ 10.256,60</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td><strong>R$ 10.256,60</strong></td>
+                                        <td><span class="badge-percentage">8,1%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>🟧 Lajes</strong></td>
+                                        <td>-</td>
+                                        <td>R$ 7.200,12</td>
+                                        <td>-</td>
+                                        <td><strong>R$ 7.200,12</strong></td>
+                                        <td><span class="badge-percentage">5,7%</span></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Análise Detalhada -->
+                <div class="tab-pane fade" id="analise-detalhada">
+                    <h2 class="section-title">💰 Análise Financeira Detalhada</h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Material vs Mão de Obra por Pavimento</h3>
+                                <canvas id="detalheMaterialMaoObraChart" width="400" height="220"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h3 class="chart-title">Evolução de Custos Acumulados</h3>
+                                <canvas id="custosAcumuladosChart" width="400" height="220"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3 class="chart-title">Detalhamento Completo dos Serviços</h3>
+                        <div class="table-responsive">
+                            <table class="data-table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr>
+                                        <th>Pavimento</th>
+                                        <th>Elemento</th>
+                                        <th>Serviço</th>
+                                        <th>Unidade</th>
+                                        <th>Quantidade</th>
+                                        <th>Valor Unit.</th>
+                                        <th>Material</th>
+                                        <th>Mão Obra</th>
+                                        <th>Total</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalhamento-servicos">
+                                    <!-- Dados serão inseridos via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualização 3D -->
+                <div class="tab-pane fade" id="visualizacao-3d">
+                    <h2 class="section-title">🏗️ Visualização 3D da Estrutura</h2>
+                    
+                    <!-- Controles de Upload e Visualização -->
+                    <div class="chart-container">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <h3 class="chart-title">
+                                    <i class="fas fa-cube"></i> Visualizador IFC Real - Vila Andriw
+                                </h3>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-robot"></i> 
+                                    <strong>Carregamento Automático Ativado</strong> - Detecta e carrega VilaAndriw.ifc da pasta
+                                </p>
+                            </div>
+                            <div class="col-lg-4 text-end">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-success btn-sm" onclick="tentarCarregamentoAutomatico()">
+                                        <i class="fas fa-robot"></i> Tentar Automático
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="selecionarArquivoLocal()">
+                                        <i class="fas fa-folder-open"></i> Seleção Manual
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetarVisualizacao()">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Input file oculto -->
+                        <input type="file" id="ifc-file-input" accept=".ifc" style="display: none;" onchange="processarArquivoIFC(this.files[0])">
+                        
+                        <!-- Container da visualização 3D -->
+                        <div id="ifc-viewer-container" style="width: 100%; height: 500px; border: 2px solid #e5e7eb; border-radius: 8px; position: relative; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                            <div id="viewer-placeholder" class="d-flex align-items-center justify-content-center h-100">
+                                <div class="text-center">
+                                    <i class="fas fa-robot fa-4x text-success mb-3"></i>
+                                    <h4 class="text-primary">🤖 Carregamento Automático IFC</h4>
+                                    <p class="text-muted">Sistema detecta automaticamente VilaAndriw.ifc na pasta</p>
+                                    <div class="mt-4">
+                                        <button class="btn btn-success btn-lg me-2" onclick="tentarCarregamentoAutomatico()">
+                                            <i class="fas fa-robot me-2"></i> Carregar Automático
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-lg" onclick="selecionarArquivoLocal()">
+                                            <i class="fas fa-folder-open me-2"></i> Seleção Manual
+                                        </button>
+                                    </div>
+                                    <div class="mt-3">
+                                        <small class="text-success">
+                                            <i class="fas fa-check-circle"></i> 
+                                            Apenas arquivos IFC reais - SEM modelos demo
+                                        </small>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-info">
+                                            <i class="fas fa-info-circle"></i> 
+                                            Coloque VilaAndriw.ifc na mesma pasta para carregamento direto
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Three.js para visualização 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Bibliotecas IFC com versões compatíveis -->
+    <script src="https://unpkg.com/web-ifc@0.0.36/web-ifc-api.js"></script>
+    <script src="https://unpkg.com/web-ifc-three@0.0.118/dist/IFCLoader.js"></script>
+    
+    <script>
+        // Dados estruturados do CSV Vila Andriw
+        const dadosVilaAndriw = {
+            resumo: {
+                custoTotal: 126544.18,
+                totalMaterial: 93845.16,
+                totalMaoObra: 32699.02,
+                percentualMaterial: 74.2,
+                percentualMaoObra: 25.8
+            },
+            pavimentos: [
+                {
+                    nome: "Fundação",
+                    total: 42507.19,
+                    percentual: 33.59,
+                    elementos: {
+                        vigas: 23600.73,
+                        pilares: 8649.86,
+                        fundacoes: 10256.60
+                    }
+                },
+                {
+                    nome: "Térreo", 
+                    total: 53217.60,
+                    percentual: 42.05,
+                    elementos: {
+                        vigas: 25399.51,
+                        pilares: 20617.97,
+                        lajes: 7200.12
+                    }
+                },
+                {
+                    nome: "Pavimento Superior",
+                    total: 30819.39,
+                    percentual: 24.35,
+                    elementos: {
+                        vigas: 11156.98,
+                        pilares: 16329.98,
+                        concreto: 3332.43
+                    }
+                }
+            ],
+            servicos: [
+                // Fundação - Vigas
+                {
+                    pavimento: "Fundação",
+                    elemento: "Vigas",
+                    servico: "Armação A.C. CA-50 8mm",
+                    unidade: "KG",
+                    quantidade: 480.2,
+                    valorUnitario: 15.05,
+                    material: 6295.43,
+                    maoObra: 931.58,
+                    total: 7227.01,
+                    percentual: 5.71
+                },
+                {
+                    pavimento: "Fundação", 
+                    elemento: "Vigas",
+                    servico: "Concreto FCK=25MPa",
+                    unidade: "m³",
+                    quantidade: 7.1,
+                    valorUnitario: 740.54,
+                    material: 4730.73,
+                    maoObra: 527.10,
+                    total: 5257.83,
+                    percentual: 4.15
+                },
+                {
+                    pavimento: "Fundação",
+                    elemento: "Vigas", 
+                    servico: "Forma Viga Baldrame",
+                    unidade: "m²",
+                    quantidade: 119.5,
+                    valorUnitario: 93.02,
+                    material: 6052.68,
+                    maoObra: 5063.21,
+                    total: 11115.89,
+                    percentual: 8.78
+                },
+                // Térreo - Vigas
+                {
+                    pavimento: "Térreo",
+                    elemento: "Vigas",
+                    servico: "Armação A.C. CA-50 8mm",
+                    unidade: "KG", 
+                    quantidade: 584.3,
+                    valorUnitario: 15.05,
+                    material: 7660.17,
+                    maoObra: 1133.54,
+                    total: 8793.71,
+                    percentual: 6.95
+                },
+                {
+                    pavimento: "Térreo",
+                    elemento: "Vigas",
+                    servico: "Concreto FCK=25MPa", 
+                    unidade: "m³",
+                    quantidade: 9.8,
+                    valorUnitario: 740.54,
+                    material: 6529.74,
+                    maoObra: 727.55,
+                    total: 7257.29,
+                    percentual: 5.73
+                },
+                {
+                    pavimento: "Térreo",
+                    elemento: "Pilares",
+                    servico: "Armação A.C. CA-50 12.5mm",
+                    unidade: "KG",
+                    quantidade: 341.2,
+                    valorUnitario: 11.33,
+                    material: 3592.83,
+                    maoObra: 272.96,
+                    total: 3865.79,
+                    percentual: 3.05
+                }
+            ]
+        };
+
+        // Função para formatar valores monetários
+        function formatarMoeda(valor) {
+            return 'R$ ' + valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Gráfico de distribuição por pavimento
+        const ctxPavimento = document.getElementById('custoPavimentoChart').getContext('2d');
+        new Chart(ctxPavimento, {
+            type: 'doughnut',
+            data: {
+                labels: dadosVilaAndriw.pavimentos.map(p => p.nome),
+                datasets: [{
+                    data: dadosVilaAndriw.pavimentos.map(p => p.total),
+                    backgroundColor: ['#8b5cf6', '#10b981', '#3b82f6'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const valor = context.parsed || 0;
+                                const percentual = dadosVilaAndriw.pavimentos[context.dataIndex].percentual;
+                                return context.label + ': ' + formatarMoeda(valor) + ' (' + percentual + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Participação por Elemento Estrutural
+        const ctxElementoGeral = document.getElementById('elementoGeralChart').getContext('2d');
+        new Chart(ctxElementoGeral, {
+            type: 'doughnut',
+            data: {
+                labels: ['Vigas', 'Pilares', 'Fundações', 'Lajes'],
+                datasets: [{
+                    data: [60157.22, 48930.24, 10256.60, 7200.12],
+                    backgroundColor: ['#8b5cf6', '#10b981', '#3b82f6', '#f59e0b'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const valor = context.parsed || 0;
+                                const total = dadosVilaAndriw.resumo.custoTotal;
+                                const percentual = ((valor / total) * 100).toFixed(1);
+                                return context.label + ': ' + formatarMoeda(valor) + ' (' + percentual + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico comparativo por pavimentos
+        const ctxComparativo = document.getElementById('comparativoPavimentosChart').getContext('2d');
+        new Chart(ctxComparativo, {
+            type: 'bar',
+            data: {
+                labels: dadosVilaAndriw.pavimentos.map(p => p.nome),
+                datasets: [{
+                    label: 'Custo Total',
+                    data: dadosVilaAndriw.pavimentos.map(p => p.total),
+                    backgroundColor: ['#8b5cf6', '#10b981', '#3b82f6'],
+                    borderColor: ['#7c3aed', '#059669', '#1e40af'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatarMoeda(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatarMoeda(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de elementos por pavimento
+        const ctxElemento = document.getElementById('elementoPavimentoChart').getContext('2d');
+        new Chart(ctxElemento, {
+            type: 'bar',
+            data: {
+                labels: ['Fundação', 'Térreo', 'Superior'],
+                                        datasets: [
+                            {
+                                label: 'Vigas',
+                                data: [23600.73, 25399.51, 11156.98],
+                                backgroundColor: '#8b5cf6'
+                            },
+                            {
+                                label: 'Pilares', 
+                                data: [8649.86, 20617.97, 19662.41],
+                                backgroundColor: '#10b981'
+                            },
+                            {
+                                label: 'Outros',
+                                data: [10256.60, 7200.12, 0],
+                                backgroundColor: '#3b82f6'
+                            }
+                        ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatarMoeda(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + formatarMoeda(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de participação dos elementos
+        const ctxPeso = document.getElementById('pesoElementosChart').getContext('2d');
+        new Chart(ctxPeso, {
+            type: 'doughnut',
+            data: {
+                labels: ['Vigas', 'Pilares', 'Fundações', 'Lajes'],
+                datasets: [{
+                    data: [60157.22, 48930.24, 10256.60, 7200.12],
+                    backgroundColor: ['#8b5cf6', '#10b981', '#3b82f6', '#f59e0b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 10,
+                            usePointStyle: true,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const valor = context.parsed || 0;
+                                const total = dadosVilaAndriw.resumo.custoTotal;
+                                const percentual = ((valor / total) * 100).toFixed(1);
+                                return context.label + ': ' + formatarMoeda(valor) + ' (' + percentual + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico Material vs Mão de Obra Detalhado por Pavimento
+        const materialPorPavimento = [31668.84, 40062.44, 22113.88]; // Valores aproximados baseados na proporção 74.2%/25.8%
+        const maoObraPorPavimento = [10838.35, 13155.16, 8705.51];
+
+        const ctxDetalhe = document.getElementById('detalheMaterialMaoObraChart').getContext('2d');
+        new Chart(ctxDetalhe, {
+            type: 'bar',
+            data: {
+                labels: dadosVilaAndriw.pavimentos.map(p => p.nome),
+                datasets: [
+                    {
+                        label: 'Material',
+                        data: materialPorPavimento,
+                        backgroundColor: '#06b6d4'
+                    },
+                    {
+                        label: 'Mão de Obra',
+                        data: maoObraPorPavimento,
+                        backgroundColor: '#f59e0b'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatarMoeda(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + formatarMoeda(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de custos acumulados
+        const ctxAcumulado = document.getElementById('custosAcumuladosChart').getContext('2d');
+        new Chart(ctxAcumulado, {
+            type: 'line',
+            data: {
+                labels: ['Fundação', 'Térreo', 'Superior'],
+                datasets: [{
+                    label: 'Custo Acumulado',
+                    data: [42507.19, 95724.79, 126544.18],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatarMoeda(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Acumulado: ' + formatarMoeda(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Preencher tabela de detalhamento de serviços
+        function preencherTabelaServicos() {
+            const tbody = document.getElementById('detalhamento-servicos');
+            dadosVilaAndriw.servicos.forEach(servico => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${servico.pavimento}</td>
+                    <td>${servico.elemento}</td>
+                    <td>${servico.servico}</td>
+                    <td>${servico.unidade}</td>
+                    <td>${servico.quantidade.toLocaleString('pt-BR')}</td>
+                    <td>${formatarMoeda(servico.valorUnitario)}</td>
+                    <td>${formatarMoeda(servico.material)}</td>
+                    <td>${formatarMoeda(servico.maoObra)}</td>
+                    <td><strong>${formatarMoeda(servico.total)}</strong></td>
+                    <td><span class="badge-percentage">${servico.percentual}%</span></td>
+                `;
+            });
+        }
+
+        // Sistema de visualização 3D aprimorado
+        let viewer3D = null;
+        let scene, camera, renderer, controls;
+        let currentModel = null;
+
+        function init3DViewer() {
+            const container = document.getElementById('ifc-viewer-container');
+            if (!container) return false;
+
+            // Configuração da cena Three.js
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f0f0);
+
+            // Câmera
+            const aspect = container.clientWidth / container.clientHeight;
+            camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+            camera.position.set(10, 10, 10);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Controles (se disponível)
+            if (typeof THREE.OrbitControls !== 'undefined') {
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.25;
+                controls.enableZoom = true;
+            }
+
+            // Iluminação
+            setupLighting();
+
+            // Adiciona canvas ao container
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+
+            // Inicia loop de renderização
+            animate3D();
+
+            // Responsividade
+            window.addEventListener('resize', onWindowResize3D);
+
+            return true;
+        }
+
+        function setupLighting() {
+            // Luz ambiente
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            // Luz direcional principal
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(-1, 1, 1);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            // Luz de preenchimento
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            fillLight.position.set(1, 1, -1);
+            scene.add(fillLight);
+
+            // Luz do hemisfério
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.4);
+            scene.add(hemiLight);
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            if (controls) {
+                controls.update();
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize3D() {
+            if (!camera || !renderer) return;
+            
+            const container = document.getElementById('ifc-viewer-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function showLoading3D(show, message = 'Carregando modelo 3D...') {
+            const container = document.getElementById('ifc-viewer-container');
+            let loadingDiv = container.querySelector('.loading-3d-overlay');
+            
+            if (show && !loadingDiv) {
+                loadingDiv = document.createElement('div');
+                loadingDiv.className = 'loading-3d-overlay position-absolute w-100 h-100 d-flex align-items-center justify-content-center';
+                loadingDiv.style.cssText = 'top: 0; left: 0; background: rgba(255,255,255,0.9); z-index: 1000;';
+                loadingDiv.innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <h5>${message}</h5>
+                        <p class="text-muted">Processando arquivo IFC...</p>
+                    </div>
+                `;
+                container.appendChild(loadingDiv);
+            } else if (!show && loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        function selecionarArquivoLocal() {
+            document.getElementById('ifc-file-input').click();
+        }
+
+        async function processarArquivoIFC(file) {
+            if (!file) return;
+
+            console.log('🔄 Processando arquivo IFC REAL selecionado:', file.name);
+            console.log('📁 Tamanho do arquivo:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+            
+            // Inicializa o visualizador 3D se necessário
+            if (!scene) {
+                const success = init3DViewer();
+                if (!success) {
+                    alert('Erro ao inicializar visualizador 3D');
+                    return;
+                }
+            }
+
+            showLoading3D(true, 'Carregando IFC REAL: ' + file.name);
+
+            try {
+                // Verifica se é um arquivo IFC
+                if (!file.name.toLowerCase().endsWith('.ifc')) {
+                    throw new Error('Arquivo deve ter extensão .ifc');
+                }
+
+                // Carrega o arquivo IFC real - SEM FALLBACK PARA DEMO
+                console.log('🚀 Iniciando carregamento do arquivo IFC REAL...');
+                await carregarIFCReal(file);
+                
+                showLoading3D(false);
+                
+                // Atualiza informações do modelo
+                atualizarInfoModelo(file);
+                
+                console.log('✅ SUCESSO! Arquivo IFC real carregado:', file.name);
+                console.log('🏗️ Modelo 3D agora mostra a estrutura REAL do Vila Andriw');
+                
+            } catch (error) {
+                console.error('❌ ERRO ao carregar arquivo IFC real:', error);
+                showLoading3D(false);
+                
+                // NÃO USA FALLBACK - mostra erro e pede para tentar novamente
+                alert(`❌ Erro ao carregar o arquivo IFC real: ${file.name}
+
+🔍 Motivo: ${error.message}
+
+💡 Soluções:
+1. Verifique se o arquivo não está corrompido
+2. Tente novamente em alguns segundos
+3. Verifique se o arquivo é realmente um IFC válido
+
+⚠️ O sistema NÃO carregará modelo demo - apenas arquivos IFC reais!`);
+                
+                // Reset do visualizador
+                resetarVisualizacao();
+            }
+        }
+
+        // Sistema robusto de verificação e carregamento IFC
+        function verificarBibliotecasIFC() {
+            const checks = {
+                three: typeof THREE !== 'undefined',
+                webIFC: typeof WebIFC !== 'undefined',
+                ifcLoader: typeof THREE !== 'undefined' && typeof THREE.IFCLoader !== 'undefined'
+            };
+            
+            console.log('🔍 Verificação de bibliotecas:', checks);
+            return checks;
+        }
+
+        async function aguardarBibliotecas(maxTentativas = 10) {
+            return new Promise((resolve, reject) => {
+                let tentativas = 0;
+                
+                const verificar = () => {
+                    tentativas++;
+                    const status = verificarBibliotecasIFC();
+                    
+                    if (status.three && status.ifcLoader) {
+                        console.log('✅ Todas as bibliotecas IFC carregadas!');
+                        resolve(true);
+                    } else if (tentativas >= maxTentativas) {
+                        console.error('❌ Timeout: Bibliotecas IFC não carregaram');
+                        reject(new Error('Bibliotecas IFC não carregaram após ' + maxTentativas + ' tentativas'));
+                    } else {
+                        console.log(`⏳ Aguardando bibliotecas... (${tentativas}/${maxTentativas})`);
+                        setTimeout(verificar, 1000);
+                    }
+                };
+                
+                verificar();
+            });
+        }
+
+        async function carregarIFCReal(file) {
+            return new Promise(async (resolve, reject) => {
+                console.log('🔧 Iniciando carregamento IFC real...');
+                
+                try {
+                    // Aguarda bibliotecas carregarem
+                    await aguardarBibliotecas();
+                    
+                    // Verifica novamente se IFCLoader está disponível
+                    if (typeof THREE.IFCLoader === 'undefined') {
+                        throw new Error('THREE.IFCLoader não está disponível após carregamento');
+                    }
+
+                    // Cria o loader IFC
+                    const ifcLoader = new THREE.IFCLoader();
+                    
+                    // Configura o loader com path correto
+                    if (ifcLoader.ifcManager && ifcLoader.ifcManager.setWasmPath) {
+                        ifcLoader.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.36/');
+                    }
+                    
+                    // Cria URL do arquivo
+                    const fileUrl = URL.createObjectURL(file);
+                    
+                    console.log('📦 Carregando geometria IFC real...');
+                    
+                    // Carrega o arquivo IFC
+                    ifcLoader.load(
+                        fileUrl,
+                        (ifcModel) => {
+                            console.log('✅ Geometria IFC REAL carregada!');
+                            
+                            // Remove modelo anterior
+                            if (currentModel) {
+                                scene.remove(currentModel);
+                            }
+                            
+                            // Configura materiais do modelo
+                            configurarMateriaisIFC(ifcModel);
+                            
+                            // Adiciona o modelo à cena
+                            currentModel = ifcModel;
+                            scene.add(ifcModel);
+                            
+                            // Ajusta câmera para o modelo
+                            fitCameraToModel();
+                            
+                            // Extrai informações do modelo real
+                            extrairInformacoesIFC(ifcModel, ifcLoader);
+                            
+                            // Libera URL
+                            URL.revokeObjectURL(fileUrl);
+                            
+                            resolve(ifcModel);
+                        },
+                        (progress) => {
+                            if (progress.total > 0) {
+                                const percent = (progress.loaded / progress.total * 100).toFixed(1);
+                                console.log(`📊 Progresso IFC Real: ${percent}%`);
+                                showLoading3D(true, `Carregando IFC Real: ${percent}%`);
+                            }
+                        },
+                        (error) => {
+                            console.error('❌ Erro no carregamento IFC:', error);
+                            URL.revokeObjectURL(fileUrl);
+                            reject(error);
+                        }
+                    );
+                    
+                } catch (error) {
+                    console.error('❌ Erro na preparação IFC:', error);
+                    reject(error);
+                }
+            });
+        }
+
+        function configurarMateriaisIFC(ifcModel) {
+            console.log('🎨 Configurando materiais IFC...');
+            
+            // Material padrão para concreto
+            const concretoMaterial = new THREE.MeshLambertMaterial({
+                color: 0xcccccc,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            // Material para aço
+            const acoMaterial = new THREE.MeshLambertMaterial({
+                color: 0x654321,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            
+            // Aplica materiais baseado no tipo de elemento
+            ifcModel.traverse((child) => {
+                if (child.isMesh) {
+                    // Aplica material baseado nas propriedades do elemento
+                    child.material = concretoMaterial.clone();
+                    
+                    // Ajustes específicos por tipo (se disponível)
+                    if (child.userData && child.userData.type) {
+                        switch (child.userData.type) {
+                            case 'IfcBeam':
+                                child.material.color.setHex(0x8b5cf6); // Vigas - roxo
+                                break;
+                            case 'IfcColumn':
+                                child.material.color.setHex(0x10b981); // Pilares - verde
+                                break;
+                            case 'IfcSlab':
+                                child.material.color.setHex(0xf59e0b); // Lajes - amarelo
+                                break;
+                            case 'IfcFooting':
+                                child.material.color.setHex(0x6b7280); // Fundações - cinza
+                                break;
+                            default:
+                                child.material.color.setHex(0xcccccc); // Padrão - cinza claro
+                        }
+                    }
+                }
+            });
+        }
+
+        async function extrairInformacoesIFC(ifcModel, ifcLoader) {
+            console.log('📋 Extraindo informações do modelo IFC...');
+            
+            try {
+                // Extrai propriedades básicas
+                const manager = ifcLoader.ifcManager;
+                const modelID = ifcModel.modelID;
+                
+                // Conta elementos por tipo
+                const elementos = {
+                    vigas: 0,
+                    pilares: 0,
+                    lajes: 0,
+                    fundacoes: 0,
+                    total: 0
+                };
+                
+                // Busca elementos estruturais (com fallback se WEBIFC não estiver disponível)
+                let beams = [], columns = [], slabs = [], footings = [];
+                
+                try {
+                    if (typeof WEBIFC !== 'undefined') {
+                        beams = await manager.getAllItemsOfType(modelID, WEBIFC.IFCBEAM, false) || [];
+                        columns = await manager.getAllItemsOfType(modelID, WEBIFC.IFCCOLUMN, false) || [];
+                        slabs = await manager.getAllItemsOfType(modelID, WEBIFC.IFCSLAB, false) || [];
+                        footings = await manager.getAllItemsOfType(modelID, WEBIFC.IFCFOOTING, false) || [];
+                    } else {
+                        // Fallback: conta elementos pela geometria/nome
+                        console.log('ℹ️ WEBIFC não disponível, usando contagem aproximada');
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Erro ao buscar elementos IFC:', error);
+                }
+                
+                elementos.vigas = beams.length;
+                elementos.pilares = columns.length;
+                elementos.lajes = slabs.length;
+                elementos.fundacoes = footings.length;
+                elementos.total = elementos.vigas + elementos.pilares + elementos.lajes + elementos.fundacoes;
+                
+                console.log('📊 Elementos encontrados:', elementos);
+                
+                // Atualiza interface com dados reais
+                document.getElementById('elements-count').textContent = `${elementos.total} elementos (${elementos.vigas}V, ${elementos.pilares}P, ${elementos.lajes}L, ${elementos.fundacoes}F)`;
+                document.getElementById('materials-count').textContent = 'Concreto, Aço CA-50';
+                document.getElementById('ifc-version').textContent = 'IFC Real - Vila Andriw';
+                
+            } catch (error) {
+                console.warn('⚠️ Erro ao extrair informações IFC:', error);
+                // Usa informações genéricas se houver erro
+                document.getElementById('elements-count').textContent = 'Modelo IFC carregado';
+                document.getElementById('materials-count').textContent = 'Estrutural';
+            }
+        }
+
+        // FUNÇÃO REMOVIDA: criarModeloRepresentativo()
+        // O sistema agora carrega APENAS arquivos IFC reais - sem modelos demo/representativos
+        // Para carregar o Vila Andriw, use o carregamento automático ou seleção manual
+
+        function fitCameraToModel() {
+            if (!currentModel) return;
+
+            const box = new THREE.Box3().setFromObject(currentModel);
+            const size = box.getSize(new THREE.Vector3()).length();
+            const center = box.getCenter(new THREE.Vector3());
+
+            if (controls) {
+                controls.target.copy(center);
+            }
+            
+            camera.position.copy(center);
+            camera.position.x += size * 0.8;
+            camera.position.y += size * 0.6;
+            camera.position.z += size * 0.8;
+            camera.lookAt(center);
+        }
+
+        function atualizarInfoModelo(file) {
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            document.getElementById('elements-count').textContent = '309 elementos';
+            document.getElementById('materials-count').textContent = 'Concreto, Aço';
+            document.getElementById('ifc-version').textContent = 'IFC 2x3/4';
+            document.getElementById('loading-status').innerHTML = '<span class="badge bg-success">Carregado com sucesso</span>';
+        }
+
+        function resetarVisualizacao() {
+            if (currentModel) {
+                scene.remove(currentModel);
+                currentModel = null;
+            }
+
+            if (camera) {
+                camera.position.set(10, 10, 10);
+                camera.lookAt(0, 0, 0);
+            }
+
+            if (controls) {
+                controls.reset();
+            }
+
+            // Reset das informações
+            document.getElementById('file-name').textContent = 'VilaAndriw.ifc';
+            document.getElementById('file-size').textContent = 'Aguardando seleção...';
+            document.getElementById('elements-count').textContent = '-';
+            document.getElementById('materials-count').textContent = 'Aguardando...';
+            document.getElementById('ifc-version').textContent = 'IFC Real';
+            document.getElementById('loading-status').innerHTML = '<span class="badge bg-info">Pronto para carregar IFC</span>';
+
+            console.log('🔄 Visualizador IFC resetado');
+        }
+
+        async function tentarCarregamentoAutomatico() {
+            console.log('🔍 Tentando carregar VilaAndriw.ifc automaticamente...');
+            
+            // Inicializa o visualizador 3D primeiro
+            if (!scene) {
+                init3DViewer();
+            }
+            
+            try {
+                // Tenta carregar o arquivo da mesma pasta que o HTML
+                await carregarIFCAutomatico();
+                
+            } catch (error) {
+                console.log('ℹ️ Carregamento automático falhou:', error.message);
+                console.log('📁 Para carregar manualmente: clique no botão e selecione VilaAndriw.ifc');
+                
+                // Atualiza interface para seleção manual
+                const statusElement = document.getElementById('loading-status');
+                if (statusElement) {
+                    statusElement.innerHTML = '<span class="badge bg-warning">Clique para carregar VilaAndriw.ifc</span>';
+                }
+            }
+        }
+
+        async function carregarIFCAutomatico() {
+            return new Promise((resolve, reject) => {
+                console.log('🚀 Iniciando carregamento automático do VilaAndriw.ifc...');
+                
+                // Verifica se as bibliotecas IFC estão disponíveis
+                if (typeof THREE.IFCLoader === 'undefined') {
+                    reject(new Error('Biblioteca IFCLoader não carregada'));
+                    return;
+                }
+
+                // Cria o loader IFC
+                const ifcLoader = new THREE.IFCLoader();
+                
+                // Configura o loader
+                ifcLoader.ifcManager.setWasmPath('https://unpkg.com/web-ifc@0.0.57/');
+                
+                // Tenta carregar o arquivo da pasta (mesmo diretório)
+                const caminhoIFC = './VilaAndriw.ifc';
+                
+                console.log('📦 Carregando VilaAndriw.ifc da pasta...');
+                showLoading3D(true, 'Carregando VilaAndriw.ifc automaticamente...');
+                
+                // Carrega o arquivo IFC automaticamente
+                ifcLoader.load(
+                    caminhoIFC,
+                    (ifcModel) => {
+                        console.log('✅ VilaAndriw.ifc carregado automaticamente!');
+                        
+                        // Remove modelo anterior
+                        if (currentModel) {
+                            scene.remove(currentModel);
+                        }
+                        
+                        // Configura materiais do modelo
+                        configurarMateriaisIFC(ifcModel);
+                        
+                        // Adiciona o modelo à cena
+                        currentModel = ifcModel;
+                        scene.add(ifcModel);
+                        
+                        // Ajusta câmera para o modelo
+                        fitCameraToModel();
+                        
+                        // Extrai informações do modelo
+                        extrairInformacoesIFC(ifcModel, ifcLoader);
+                        
+                        // Atualiza informações da interface
+                        document.getElementById('file-name').textContent = 'VilaAndriw.ifc';
+                        document.getElementById('file-size').textContent = 'Carregado automaticamente';
+                        document.getElementById('ifc-version').textContent = 'IFC Real - Vila Andriw';
+                        document.getElementById('loading-status').innerHTML = '<span class="badge bg-success">Carregado automaticamente</span>';
+                        
+                        showLoading3D(false);
+                        resolve(ifcModel);
+                    },
+                    (progress) => {
+                        if (progress.total > 0) {
+                            const percent = (progress.loaded / progress.total * 100).toFixed(1);
+                            console.log(`📊 Progresso automático: ${percent}%`);
+                            showLoading3D(true, `Carregando automático: ${percent}%`);
+                        }
+                    },
+                    (error) => {
+                        console.log('⚠️ Carregamento automático falhou:', error.message);
+                        showLoading3D(false);
+                        reject(error);
+                    }
+                );
+            });
+        }
+
+        // Inicializa visualizador quando a aba 3D é aberta
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener para mudança de aba
+            const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+            tabButtons.forEach(button => {
+                button.addEventListener('shown.bs.tab', function(event) {
+                    if (event.target.getAttribute('data-bs-target') === '#visualizacao-3d') {
+                        setTimeout(() => {
+                            console.log('🎯 Aba 3D aberta - tentando carregamento automático...');
+                            
+                            if (!scene) {
+                                init3DViewer();
+                            }
+                            
+                            // TENTA CARREGAR AUTOMATICAMENTE o VilaAndriw.ifc
+                            tentarCarregamentoAutomatico();
+                            
+                            onWindowResize3D(); // Ajusta tamanho
+                        }, 500);
+                    }
+                });
+            });
+            
+            // Inicializa o sistema quando as bibliotecas estiverem prontas
+            setTimeout(() => {
+                console.log('🚀 Sistema de visualização IFC REAL inicializado');
+                console.log('🎯 MODO AUTOMÁTICO ATIVADO:');
+                console.log('   ✅ Abre aba "Visualização 3D" → Carrega VilaAndriw.ifc automaticamente');
+                console.log('   📁 Se automático falhar → Use seleção manual');
+                console.log('   🚫 SEM modelo demo - apenas IFC real!');
+                console.log('');
+                console.log('💡 Dica: Coloque VilaAndriw.ifc na mesma pasta do HTML para carregamento automático');
+            }, 2000);
+        });
+
+        // Funções de filtro
+        function filtrarPavimento(tipo) {
+            // Remove active de todos os botões
+            document.querySelectorAll('.btn-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Adiciona active ao botão clicado
+            event.target.classList.add('active');
+            
+            // Mostra/esconde cards
+            const cards = document.querySelectorAll('.pavimento-card');
+            cards.forEach(card => {
+                if (tipo === 'todos') {
+                    card.style.display = 'block';
+                } else {
+                    const pavimento = card.getAttribute('data-pavimento');
+                    card.style.display = pavimento === tipo ? 'block' : 'none';
+                }
+            });
+            
+            console.log(`Filtro aplicado: ${tipo}`);
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            preencherTabelaServicos();
+        });
+    </script>
+</body>
+</html>

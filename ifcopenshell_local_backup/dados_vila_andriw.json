@@ -1,0 +1,122 @@
+{
+  "projeto": "Vila Andriw",
+  "data_atualizacao": "2025-08-19 03:23:55",
+  "arquivo_ifc": "VilaAndriw.ifc",
+  "volume_aco": {
+    "resumo": {
+      "peso_total": 24794.0,
+      "volume_concreto_total": 274.7,
+      "custo_concreto_total": 203426.21,
+      "custo_armacao_total": 353756.93,
+      "custo_total_obra": 557183.14,
+      "preco_unitario_concreto": 740.54,
+      "data_referencia_precos": "07/2025",
+      "pavimentos": 3,
+      "bitolas_diferentes": 6,
+      "elementos_total": 309
+    },
+    "por_pavimento": [
+      {
+        "nome": "Fundação",
+        "peso_aco": 11878.0,
+        "volume_concreto": 128.9,
+        "custo_concreto": 95455.56,
+        "custo_armacao": 170755.87,
+        "custo_total": 266211.43,
+        "elementos": 129
+      },
+      {
+        "nome": "Pavimento Superior",
+        "peso_aco": 3078.0,
+        "volume_concreto": 27.9,
+        "custo_concreto": 20661.03,
+        "custo_armacao": 43610.85,
+        "custo_total": 64271.88,
+        "elementos": 45
+      },
+      {
+        "nome": "Térreo",
+        "peso_aco": 9838.0,
+        "volume_concreto": 117.9,
+        "custo_concreto": 87309.62,
+        "custo_armacao": 139390.21,
+        "custo_total": 226699.83,
+        "elementos": 135
+      }
+    ],
+    "por_bitola": [
+      {
+        "bitola": "5.0 mm",
+        "peso": 4958.8,
+        "percentual": 20.0
+      },
+      {
+        "bitola": "6.3 mm",
+        "peso": 3719.1,
+        "percentual": 15.0
+      },
+      {
+        "bitola": "8.0 mm",
+        "peso": 4958.8,
+        "percentual": 20.0
+      },
+      {
+        "bitola": "10.0 mm",
+        "peso": 4958.8,
+        "percentual": 20.0
+      },
+      {
+        "bitola": "12.5 mm",
+        "peso": 3719.1,
+        "percentual": 15.0
+      },
+      {
+        "bitola": "16.0 mm",
+        "peso": 2479.4,
+        "percentual": 10.0
+      }
+    ],
+    "por_elemento": [
+      {
+        "tipo": "vigas",
+        "peso_aco": 9650.0,
+        "volume_concreto": 96.5,
+        "custo_concreto": 71462.11,
+        "custo_armacao": 136726.99,
+        "custo_total": 208189.1,
+        "elementos": 193,
+        "percentual": 38.9
+      },
+      {
+        "tipo": "pilares",
+        "peso_aco": 6144.0,
+        "volume_concreto": 51.2,
+        "custo_concreto": 37915.52,
+        "custo_armacao": 87051.52,
+        "custo_total": 124967.04,
+        "elementos": 64,
+        "percentual": 24.8
+      },
+      {
+        "tipo": "sapatas",
+        "peso_aco": 5520.0,
+        "volume_concreto": 69.0,
+        "custo_concreto": 51097.26,
+        "custo_armacao": 80672.04,
+        "custo_total": 131769.3,
+        "elementos": 23,
+        "percentual": 22.3
+      },
+      {
+        "tipo": "lajes",
+        "peso_aco": 3480.0,
+        "volume_concreto": 58.0,
+        "custo_concreto": 42951.32,
+        "custo_armacao": 49306.38,
+        "custo_total": 92257.7,
+        "elementos": 29,
+        "percentual": 14.0
+      }
+    ]
+  }
+}
