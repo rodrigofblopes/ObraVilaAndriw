@@ -17,12 +17,12 @@ try:
 except ImportError:
     HAS_IFC_VIEWER = False
 
-# Configuração da página otimizada para mobile
+# Configuração da página
 st.set_page_config(
     page_title="Dashboard Vila Andriw",
     page_icon="🏗️",
     layout="wide",
-    initial_sidebar_state="auto",  # Auto-collapse em mobile
+    initial_sidebar_state="collapsed",  # Sidebar oculta
     menu_items={
         'Get Help': 'https://github.com/rodrigofblopes/ObraVilaAndriw',
         'Report a bug': 'https://github.com/rodrigofblopes/ObraVilaAndriw/issues',
@@ -34,8 +34,7 @@ st.set_page_config(
         **Recursos:**
         - 💰 Análise financeira completa
         - 🏗️ Breakdown por pavimentos  
-        - 📱 Otimizado para mobile
-        - 🎮 Visualização 3D
+        - 🎮 Visualização 3D interativa
         
         Desenvolvido com Streamlit + Python
         """
@@ -554,120 +553,26 @@ def formatar_moeda(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 def main():
-    # Detecção de dispositivo móvel via JavaScript
-    st.markdown("""
-    <script>
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-        document.body.classList.add('mobile-device');
-    }
-    </script>
-    """, unsafe_allow_html=True)
-    
-    # Configurar visualização mobile no session state
-    if 'mobile_view' not in st.session_state:
-        # Tentar detectar mobile através do user agent (limitado no Streamlit)
-        st.session_state.mobile_view = False
-    
-    # Header principal responsivo
+    # Header principal
     st.markdown("""
     <div class="main-header">
         <h1>🏗️ Dashboard Vila Andriw</h1>
         <p>Análise Orçamentária e Estrutural - SINAPI 07/2025</p>
-        <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
-            📱 Design otimizado para mobile | 💻 Compatível com desktop
-        </div>
     </div>
     """, unsafe_allow_html=True)
     
     # Carrega dados
     dados = carregar_dados_vila_andriw()
     
-    # Sidebar com informações do projeto (otimizada para mobile)
-    with st.sidebar:
-        # Header compacto da sidebar
-        st.markdown("""
-        <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 10px; margin-bottom: 1rem;">
-            <h3 style="color: white; margin: 0;">🏗️ Vila Andriw</h3>
-            <p style="color: white; margin: 0; opacity: 0.9; font-size: 0.9rem;">Projeto Estrutural</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Informações principais em cards compactos
-        st.markdown("### 📊 Resumo")
-        
-        # Metrics em layout compacto
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("💰 Total", formatar_moeda(dados["resumo"]["custo_total"])[:8] + "...")
-            st.metric("📅 Base", "SINAPI")
-        with col2:
-            st.metric("🏢 Pavtos", "3")
-            st.metric("📈 Atualiz.", datetime.now().strftime("%d/%m"))
-        
-        st.markdown("---")
-        
-        # Navegação mais visual e compacta
-        st.markdown("### 🧭 Navegação")
-        
-        # Botões de navegação estilizados
-        nav_options = [
-            ("🏠", "Visão Geral", "Resumo executivo"),
-            ("🏢", "Por Pavimento", "Análise detalhada"),
-            ("🔧", "Por Elemento", "Breakdown estrutural"),
-            ("💰", "Análise Detalhada", "Dados financeiros"),
-            ("🎮", "Visualização 3D", "Modelo IFC")
-        ]
-        
-        for icon, title, desc in nav_options:
-            st.markdown(f"""
-            <div style="
-                background: #f8fafc; 
-                padding: 0.8rem; 
-                border-radius: 8px; 
-                margin-bottom: 0.5rem;
-                border-left: 3px solid #3b82f6;
-            ">
-                <strong>{icon} {title}</strong><br>
-                <small style="color: #6b7280;">{desc}</small>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Status do projeto
-        st.markdown("---")
-        st.markdown("### 📊 Status")
-        st.success("✅ Dashboard Online")
-        st.info("📱 Mobile Optimized")
-        
-        # Link para GitHub
-        st.markdown("---")
-        st.markdown("### 🔗 Links")
-        st.markdown("🌐 [Ver no GitHub](https://github.com/rodrigofblopes/ObraVilaAndriw)")
-        st.markdown("📱 [Dashboard Live](https://obravilaandriw.streamlit.app/)")
-    
-    # Abas principais otimizadas para mobile
-    st.markdown("### 📑 Seções do Dashboard")
-    
-    # Criar abas com nomes mais compactos para mobile
-    tab_names = [
-        "🏠 Geral", 
-        "🏢 Pavimentos", 
-        "🔧 Elementos", 
-        "💰 Detalhada",
-        "🎮 3D"
-    ]
-    
-    # Para desktop, usar nomes completos
-    desktop_names = [
+
+    # Abas principais
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "🏠 Visão Geral", 
         "🏢 Por Pavimento", 
         "🔧 Por Elemento", 
         "💰 Análise Detalhada",
         "🎮 Visualização 3D"
-    ]
-    
-    # Usar nomes apropriados baseado no contexto
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(tab_names)
+    ])
     
     with tab1:
         visao_geral(dados)
@@ -746,31 +651,20 @@ def por_pavimento(dados):
     """Aba de análise por pavimento melhorada"""
     st.markdown("## 🏢 Análise Detalhada por Pavimento")
     
-    # Filtros interativos otimizados para mobile
+    # Filtros interativos
     st.markdown("### 🔍 Filtros de Pavimento")
     
-    # Layout responsivo para filtros
-    if st.session_state.get('mobile_view', False):
-        # Layout vertical para mobile
-        col1, col2 = st.columns(2)
-        with col1:
-            show_todos = st.button("📊 Todos", use_container_width=True, key="btn_todos")
-            show_terreo = st.button("🏘️ Térreo", use_container_width=True, key="btn_terreo")
-        with col2:
-            show_fundacao = st.button("🏗️ Fundação", use_container_width=True, key="btn_fundacao")
-            show_superior = st.button("🏠 Superior", use_container_width=True, key="btn_superior")
-    else:
-        # Layout horizontal para desktop
-        col_filtro1, col_filtro2, col_filtro3, col_filtro4 = st.columns(4)
-        
-        with col_filtro1:
-            show_todos = st.button("📊 Todos", use_container_width=True, key="btn_todos_desk")
-        with col_filtro2:
-            show_fundacao = st.button("🏗️ Fundação", use_container_width=True, key="btn_fundacao_desk")
-        with col_filtro3:
-            show_terreo = st.button("🏘️ Térreo", use_container_width=True, key="btn_terreo_desk")
-        with col_filtro4:
-            show_superior = st.button("🏠 Superior", use_container_width=True, key="btn_superior_desk")
+    # Layout dos filtros
+    col_filtro1, col_filtro2, col_filtro3, col_filtro4 = st.columns(4)
+    
+    with col_filtro1:
+        show_todos = st.button("📊 Todos", use_container_width=True)
+    with col_filtro2:
+        show_fundacao = st.button("🏗️ Fundação", use_container_width=True)
+    with col_filtro3:
+        show_terreo = st.button("🏘️ Térreo", use_container_width=True)
+    with col_filtro4:
+        show_superior = st.button("🏠 Superior", use_container_width=True)
     
     # Determinar filtro ativo
     filtro_ativo = "Todos"
