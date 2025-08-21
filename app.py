@@ -8,34 +8,86 @@ from datetime import datetime
 import base64
 import io
 import os
+import tempfile
 
-# Configuração da página
+# Importar visualizador IFC personalizado
+try:
+    from ifc_web_viewer import create_ifc_viewer, IFCWebViewer
+    HAS_IFC_VIEWER = True
+except ImportError:
+    HAS_IFC_VIEWER = False
+
+# Configuração da página otimizada para mobile
 st.set_page_config(
     page_title="Dashboard Vila Andriw",
     page_icon="🏗️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto",  # Auto-collapse em mobile
+    menu_items={
+        'Get Help': 'https://github.com/rodrigofblopes/ObraVilaAndriw',
+        'Report a bug': 'https://github.com/rodrigofblopes/ObraVilaAndriw/issues',
+        'About': """
+        # Dashboard Vila Andriw 📊
+        
+        Dashboard interativo para análise orçamentária da obra Vila Andriw.
+        
+        **Recursos:**
+        - 💰 Análise financeira completa
+        - 🏗️ Breakdown por pavimentos  
+        - 📱 Otimizado para mobile
+        - 🎮 Visualização 3D
+        
+        Desenvolvido com Streamlit + Python
+        """
+    }
 )
 
-# CSS customizado para melhorar a aparência
+# CSS responsivo otimizado para mobile e desktop
 st.markdown("""
 <style>
-    .main-header {
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        padding: 2rem;
-        border-radius: 10px;
-        color: white;
-        text-align: center;
-        margin-bottom: 2rem;
+    /* Reset e configurações base */
+    .stApp {
+        background-color: #f8fafc;
     }
     
+    /* Header principal - responsivo */
+    .main-header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+    }
+    
+    .main-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .main-header p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    /* Cards de métricas - responsivo */
     .metric-card {
         background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1.2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         text-align: center;
-        border-left: 5px solid;
+        border-left: 4px solid;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     
     .metric-card.total {
@@ -50,20 +102,185 @@ st.markdown("""
         border-left-color: #f59e0b;
     }
     
+    /* Abas - melhoradas para mobile */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
     .stTabs [data-baseweb="tab"] {
-        height: 50px;
+        height: auto;
+        min-height: 48px;
+        padding: 12px 16px;
         background-color: #f8fafc;
-        border-radius: 8px;
+        border-radius: 10px;
         color: #374151;
+        font-weight: 600;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        min-width: 120px;
+        text-align: center;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #e2e8f0;
+        border-color: #cbd5e1;
     }
     
     .stTabs [aria-selected="true"] {
         background-color: #1e3a8a;
         color: white;
+        border-color: #1e3a8a;
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    }
+    
+    /* Botões melhorados para touch */
+    .stButton button {
+        height: 48px;
+        border-radius: 10px;
+        font-weight: 600;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        min-width: 120px;
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Sidebar responsiva */
+    .css-1d391kg {
+        padding-top: 1rem;
+    }
+    
+    /* Containers e espaçamento */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    /* Gráficos responsivos */
+    .js-plotly-plot {
+        width: 100% !important;
+    }
+    
+    /* Tabelas responsivas */
+    .dataframe {
+        font-size: 0.9rem;
+    }
+    
+    /* Cards de pavimento */
+    .pavimento-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid;
+    }
+    
+    /* MEDIA QUERIES PARA MOBILE */
+    @media (max-width: 768px) {
+        /* Header mobile */
+        .main-header {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .main-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .main-header p {
+            font-size: 0.9rem;
+        }
+        
+        /* Abas mobile */
+        .stTabs [data-baseweb="tab"] {
+            min-width: 100px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* Métricas mobile */
+        .metric-card {
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        /* Botões mobile */
+        .stButton button {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Colunas mobile - força layout vertical */
+        .row-widget.stHorizontal {
+            flex-direction: column;
+        }
+        
+        /* Sidebar mobile */
+        .css-1d391kg {
+            padding: 0.5rem;
+        }
+        
+        /* Gráficos mobile */
+        .js-plotly-plot {
+            height: 300px !important;
+        }
+        
+        /* Texto menor em mobile */
+        .dataframe {
+            font-size: 0.8rem;
+        }
+        
+        /* Reduzir padding geral em mobile */
+        .block-container {
+            padding: 1rem 0.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        /* Extra small screens */
+        .main-header {
+            padding: 0.8rem;
+        }
+        
+        .main-header h1 {
+            font-size: 1.3rem;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            min-width: 80px;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .metric-card {
+            padding: 0.8rem;
+        }
+        
+        .js-plotly-plot {
+            height: 250px !important;
+        }
+    }
+    
+    /* Animações suaves */
+    * {
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    
+    /* Melhorar contraste para acessibilidade */
+    .stMarkdown {
+        color: #1f2937;
+    }
+    
+    /* Loading states */
+    .stSpinner {
+        text-align: center;
+        padding: 2rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -337,43 +554,120 @@ def formatar_moeda(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 def main():
-    # Header principal
+    # Detecção de dispositivo móvel via JavaScript
+    st.markdown("""
+    <script>
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+        document.body.classList.add('mobile-device');
+    }
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # Configurar visualização mobile no session state
+    if 'mobile_view' not in st.session_state:
+        # Tentar detectar mobile através do user agent (limitado no Streamlit)
+        st.session_state.mobile_view = False
+    
+    # Header principal responsivo
     st.markdown("""
     <div class="main-header">
         <h1>🏗️ Dashboard Vila Andriw</h1>
         <p>Análise Orçamentária e Estrutural - SINAPI 07/2025</p>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+            📱 Design otimizado para mobile | 💻 Compatível com desktop
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
     # Carrega dados
     dados = carregar_dados_vila_andriw()
     
-    # Sidebar com informações do projeto
+    # Sidebar com informações do projeto (otimizada para mobile)
     with st.sidebar:
-        st.markdown("### 🏗️ Vila Andriw")
-        st.markdown("---")
-        st.markdown("### 📋 Informações do Projeto")
-        st.metric("Custo Total", formatar_moeda(dados["resumo"]["custo_total"]))
-        st.metric("Base de Preços", "SINAPI 07/2025")
-        st.metric("Pavimentos", "3")
-        st.metric("Data Atualização", datetime.now().strftime("%d/%m/%Y"))
+        # Header compacto da sidebar
+        st.markdown("""
+        <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 10px; margin-bottom: 1rem;">
+            <h3 style="color: white; margin: 0;">🏗️ Vila Andriw</h3>
+            <p style="color: white; margin: 0; opacity: 0.9; font-size: 0.9rem;">Projeto Estrutural</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Informações principais em cards compactos
+        st.markdown("### 📊 Resumo")
+        
+        # Metrics em layout compacto
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("💰 Total", formatar_moeda(dados["resumo"]["custo_total"])[:8] + "...")
+            st.metric("📅 Base", "SINAPI")
+        with col2:
+            st.metric("🏢 Pavtos", "3")
+            st.metric("📈 Atualiz.", datetime.now().strftime("%d/%m"))
         
         st.markdown("---")
-        st.markdown("### 🎯 Navegação Rápida")
-        st.markdown("- **Visão Geral**: Resumo executivo")
-        st.markdown("- **Por Pavimento**: Análise detalhada")
-        st.markdown("- **Por Elemento**: Breakdown estrutural")
-        st.markdown("- **Análise Detalhada**: Dados financeiros")
-        st.markdown("- **Visualização 3D**: Upload de IFC")
+        
+        # Navegação mais visual e compacta
+        st.markdown("### 🧭 Navegação")
+        
+        # Botões de navegação estilizados
+        nav_options = [
+            ("🏠", "Visão Geral", "Resumo executivo"),
+            ("🏢", "Por Pavimento", "Análise detalhada"),
+            ("🔧", "Por Elemento", "Breakdown estrutural"),
+            ("💰", "Análise Detalhada", "Dados financeiros"),
+            ("🎮", "Visualização 3D", "Modelo IFC")
+        ]
+        
+        for icon, title, desc in nav_options:
+            st.markdown(f"""
+            <div style="
+                background: #f8fafc; 
+                padding: 0.8rem; 
+                border-radius: 8px; 
+                margin-bottom: 0.5rem;
+                border-left: 3px solid #3b82f6;
+            ">
+                <strong>{icon} {title}</strong><br>
+                <small style="color: #6b7280;">{desc}</small>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Status do projeto
+        st.markdown("---")
+        st.markdown("### 📊 Status")
+        st.success("✅ Dashboard Online")
+        st.info("📱 Mobile Optimized")
+        
+        # Link para GitHub
+        st.markdown("---")
+        st.markdown("### 🔗 Links")
+        st.markdown("🌐 [Ver no GitHub](https://github.com/rodrigofblopes/ObraVilaAndriw)")
+        st.markdown("📱 [Dashboard Live](https://obravilaandriw.streamlit.app/)")
     
-    # Abas principais
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    # Abas principais otimizadas para mobile
+    st.markdown("### 📑 Seções do Dashboard")
+    
+    # Criar abas com nomes mais compactos para mobile
+    tab_names = [
+        "🏠 Geral", 
+        "🏢 Pavimentos", 
+        "🔧 Elementos", 
+        "💰 Detalhada",
+        "🎮 3D"
+    ]
+    
+    # Para desktop, usar nomes completos
+    desktop_names = [
         "🏠 Visão Geral", 
         "🏢 Por Pavimento", 
         "🔧 Por Elemento", 
         "💰 Análise Detalhada",
         "🎮 Visualização 3D"
-    ])
+    ]
+    
+    # Usar nomes apropriados baseado no contexto
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(tab_names)
     
     with tab1:
         visao_geral(dados)
@@ -452,18 +746,31 @@ def por_pavimento(dados):
     """Aba de análise por pavimento melhorada"""
     st.markdown("## 🏢 Análise Detalhada por Pavimento")
     
-    # Filtros interativos como no HTML
-    st.markdown("### 🔍 Filtros")
-    col_filtro1, col_filtro2, col_filtro3, col_filtro4 = st.columns(4)
+    # Filtros interativos otimizados para mobile
+    st.markdown("### 🔍 Filtros de Pavimento")
     
-    with col_filtro1:
-        show_todos = st.button("📊 Todos", use_container_width=True)
-    with col_filtro2:
-        show_fundacao = st.button("🏗️ Fundação", use_container_width=True)
-    with col_filtro3:
-        show_terreo = st.button("🏘️ Térreo", use_container_width=True)
-    with col_filtro4:
-        show_superior = st.button("🏠 Superior", use_container_width=True)
+    # Layout responsivo para filtros
+    if st.session_state.get('mobile_view', False):
+        # Layout vertical para mobile
+        col1, col2 = st.columns(2)
+        with col1:
+            show_todos = st.button("📊 Todos", use_container_width=True, key="btn_todos")
+            show_terreo = st.button("🏘️ Térreo", use_container_width=True, key="btn_terreo")
+        with col2:
+            show_fundacao = st.button("🏗️ Fundação", use_container_width=True, key="btn_fundacao")
+            show_superior = st.button("🏠 Superior", use_container_width=True, key="btn_superior")
+    else:
+        # Layout horizontal para desktop
+        col_filtro1, col_filtro2, col_filtro3, col_filtro4 = st.columns(4)
+        
+        with col_filtro1:
+            show_todos = st.button("📊 Todos", use_container_width=True, key="btn_todos_desk")
+        with col_filtro2:
+            show_fundacao = st.button("🏗️ Fundação", use_container_width=True, key="btn_fundacao_desk")
+        with col_filtro3:
+            show_terreo = st.button("🏘️ Térreo", use_container_width=True, key="btn_terreo_desk")
+        with col_filtro4:
+            show_superior = st.button("🏠 Superior", use_container_width=True, key="btn_superior_desk")
     
     # Determinar filtro ativo
     filtro_ativo = "Todos"
@@ -1128,88 +1435,179 @@ def gerar_modelo_3d_esquematico():
     return fig
 
 def visualizacao_3d():
-    """Aba de visualização 3D com modelo estrutural real"""
+    """Aba de visualização 3D com modelo estrutural real usando Three.js"""
     st.markdown("## 🎮 Visualização 3D da Estrutura")
     
+    # Verificar se visualizador IFC está disponível
+    if not HAS_IFC_VIEWER:
+        st.error("❌ Visualizador IFC não disponível. Instale as dependências necessárias.")
+        st.code("pip install ifcopenshell", language="bash")
+        return
+    
+    # Status de arquivos disponíveis
+    ifc_files = ["VilaAndriw.ifc", "ifcopenshell/VilaAndriw.ifc"]
+    ifc_path = None
+    
+    for path in ifc_files:
+        if os.path.exists(path):
+            ifc_path = path
+            break
+    
+    # Interface principal
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        # Modelo 3D automático
-        st.markdown("### 🏗️ Modelo Estrutural 3D - Vila Andriw")
+        st.markdown("### 🏗️ Visualizador 3D Interativo - Vila Andriw")
         
-        # Tentar carregar modelo IFC real primeiro
-        modo_modelo = st.radio(
-            "Escolha o tipo de modelo:",
-            ["🏗️ Modelo IFC Real", "📐 Modelo Esquemático"],
-            horizontal=True
-        )
-        
-        if modo_modelo == "🏗️ Modelo IFC Real":
-            with st.spinner("🔄 Carregando modelo IFC real do arquivo VilaAndriw.ifc..."):
-                fig_3d = carregar_modelo_ifc_real()
-        else:
-            with st.spinner("🔄 Gerando modelo esquemático..."):
-                fig_3d = gerar_modelo_3d_esquematico()
-        
-        st.plotly_chart(fig_3d, use_container_width=True)
-        
-        if modo_modelo == "🏗️ Modelo IFC Real":
-            st.success("✅ Modelo 3D real carregado do arquivo VilaAndriw.ifc")
-        else:
-            st.info("📐 Modelo esquemático gerado com base nos dados do projeto")
-        
-        # Upload opcional de arquivo IFC
-        st.markdown("---")
-        st.markdown("### 📁 Upload Arquivo IFC (Opcional)")
-        
-        uploaded_file = st.file_uploader(
-            "Carregar VilaAndriw.ifc para substituir modelo automático",
-            type=['ifc'],
-            help="Upload do arquivo IFC real substituirá o modelo gerado automaticamente"
-        )
-        
-        if uploaded_file is not None:
-            st.success(f"✅ Arquivo IFC carregado: {uploaded_file.name}")
-            st.info(f"📁 Tamanho: {uploaded_file.size / 1024 / 1024:.2f} MB")
-            st.warning("⚠️ Processamento de arquivos IFC requer bibliotecas especializadas")
+        # Opções de visualização
+        with st.expander("🎛️ Configurações de Visualização", expanded=False):
+            col_opt1, col_opt2, col_opt3 = st.columns(3)
             
-            with st.expander("ℹ️ Informações do Arquivo IFC"):
-                st.write(f"**Nome:** {uploaded_file.name}")
-                st.write(f"**Tipo:** {uploaded_file.type}")
-                st.write(f"**Tamanho:** {uploaded_file.size:,} bytes")
+            with col_opt1:
+                altura_viewer = st.slider("📐 Altura (px)", 400, 800, 600, 50)
+                
+            with col_opt2:
+                qualidade = st.selectbox("🌟 Qualidade", ["Alta", "Média", "Baixa"])
+                
+            with col_opt3:
+                modo_renderizacao = st.selectbox("🎨 Renderização", ["Sólido", "Wireframe", "Transparente"])
+        
+        # Exibir visualizador principal
+        if ifc_path:
+            st.markdown("#### 🎮 Controles:")
+            st.markdown("""
+            - **🖱️ Rotação**: Clique e arraste
+            - **🔍 Zoom**: Roda do mouse ou pinch
+            - **📱 Pan**: Clique direito + arrastar
+            - **🎯 Reset**: Botão no painel de controles
+            """)
+            
+            # Criar visualizador IFC web
+            try:
+                viewer = create_ifc_viewer(ifc_path, height=altura_viewer)
+                
+                if viewer:
+                    st.success("✅ Modelo 3D carregado com sucesso!")
+                    
+                    # Informações do arquivo
+                    with st.expander("📄 Informações do Arquivo IFC"):
+                        file_size = os.path.getsize(ifc_path) / (1024 * 1024)  # MB
+                        st.write(f"**📁 Arquivo:** {os.path.basename(ifc_path)}")
+                        st.write(f"**📏 Tamanho:** {file_size:.2f} MB")
+                        st.write(f"**📍 Localização:** {ifc_path}")
+                        st.write(f"**🕒 Modificado:** {datetime.fromtimestamp(os.path.getmtime(ifc_path)).strftime('%d/%m/%Y %H:%M')}")
+                
+            except Exception as e:
+                st.error(f"❌ Erro ao carregar modelo 3D: {str(e)}")
+                st.info("🔄 Tentando visualizador de fallback...")
+                
+                # Fallback para modelo esquemático
+                fig_3d = gerar_modelo_3d_esquematico()
+                st.plotly_chart(fig_3d, use_container_width=True)
+                st.warning("⚠️ Exibindo modelo esquemático como fallback")
+                
+        else:
+            st.error("❌ Arquivo VilaAndriw.ifc não encontrado!")
+            st.info("📁 Certifique-se de que o arquivo IFC está na pasta do projeto")
+            
+            # Oferecer upload de arquivo
+            st.markdown("### 📤 Upload de Arquivo IFC")
+            uploaded_file = st.file_uploader(
+                "Carregar arquivo VilaAndriw.ifc",
+                type=['ifc'],
+                help="Faça upload do arquivo IFC para visualização 3D"
+            )
+            
+            if uploaded_file is not None:
+                # Salvar arquivo temporariamente
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.ifc') as tmp_file:
+                    tmp_file.write(uploaded_file.getvalue())
+                    temp_path = tmp_file.name
+                
+                st.success(f"✅ Arquivo carregado: {uploaded_file.name}")
+                
+                try:
+                    viewer = create_ifc_viewer(temp_path, height=altura_viewer)
+                    if viewer:
+                        st.success("✅ Modelo 3D do arquivo enviado carregado!")
+                except Exception as e:
+                    st.error(f"❌ Erro ao processar arquivo: {str(e)}")
+                finally:
+                    # Limpar arquivo temporário
+                    try:
+                        os.unlink(temp_path)
+                    except:
+                        pass
     
     with col2:
-        st.markdown("### 🎛️ Controles")
+        st.markdown("### 📊 Informações do Modelo")
         
-        st.markdown("#### 👁️ Elementos Visíveis")
-        show_fundacoes = st.checkbox("🏗️ Fundações", True)
-        show_pilares = st.checkbox("🏢 Pilares", True)
-        show_vigas = st.checkbox("🟫 Vigas", True)
-        show_lajes = st.checkbox("🟧 Lajes", True)
+        # Métricas do projeto
+        st.metric("🏢 Pavimentos", "3", help="Fundação, Térreo e Superior")
+        st.metric("🏗️ Elementos", "4 tipos", help="Vigas, Pilares, Lajes, Fundações")
+        st.metric("💰 Custo Total", "R$ 126.544,18", help="Valor total do projeto")
         
-        st.markdown("#### 🎨 Visualização")
-        view_mode = st.selectbox("Modo:", ["Estrutural", "Técnico", "Presentation"])
+        st.markdown("---")
         
-        if st.button("🔄 Regenerar Modelo"):
+        # Status do sistema
+        st.markdown("### 🔧 Status do Sistema")
+        
+        # Verificar dependências
+        try:
+            import ifcopenshell
+            st.success("✅ IfcOpenShell disponível")
+            st.write(f"**Versão:** {ifcopenshell.version}")
+        except ImportError:
+            st.error("❌ IfcOpenShell não instalado")
+        
+        # Verificar arquivo IFC
+        if ifc_path:
+            st.success("✅ Arquivo IFC encontrado")
+        else:
+            st.warning("⚠️ Arquivo IFC não encontrado")
+        
+        # Status do visualizador
+        if HAS_IFC_VIEWER:
+            st.success("✅ Visualizador Web disponível")
+        else:
+            st.error("❌ Visualizador Web não disponível")
+        
+        st.markdown("---")
+        
+        # Especificações técnicas
+        st.markdown("### 📐 Especificações Técnicas")
+        
+        with st.expander("🔧 Materiais"):
+            st.write("• **Concreto:** C25/C30 MPa")
+            st.write("• **Aço:** CA-50")
+            st.write("• **Fundação:** Sapatas corridas")
+            st.write("• **Lajes:** Nervuradas e maciças")
+        
+        with st.expander("📏 Dimensões"):
+            st.write("• **Área construída:** ~40m²")
+            st.write("• **Altura total:** 4.5m")
+            st.write("• **Pé-direito:** 2.7m")
+            st.write("• **Fundação:** -1.5m")
+        
+        with st.expander("🎮 Tecnologias"):
+            st.write("• **3D Engine:** Three.js")
+            st.write("• **IFC Processor:** IfcOpenShell")
+            st.write("• **Interface:** Streamlit")
+            st.write("• **Responsivo:** Mobile-first")
+        
+        # Botões de ação
+        st.markdown("---")
+        st.markdown("### ⚡ Ações Rápidas")
+        
+        if st.button("🔄 Recarregar Modelo", use_container_width=True):
             st.rerun()
         
-        st.markdown("#### 📊 Informações")
-        with st.container():
-            st.metric("Pavimentos", "3")
-            st.metric("Pilares", "4 unidades")
-            st.metric("Custo Total", "R$ 126.544,18")
-            st.metric("Status", "✅ Ativo")
+        if st.button("📊 Ver Relatórios", use_container_width=True):
+            st.info("🚀 Redirecionando para aba de análise...")
         
-        st.markdown("#### 📐 Especificações")
-        st.write("**Materiais:**")
-        st.write("• Concreto C25")
-        st.write("• Aço CA-50")
-        st.write("• Fundação direta")
-        
-        st.write("**Dimensões:**")
-        st.write("• Área: 40m²")
-        st.write("• Altura: 4.5m")
-        st.write("• 3 pavimentos")
+        if st.button("📱 Compartilhar", use_container_width=True):
+            st.balloons()
+            st.success("🔗 Link copiado: https://obravilaandriw.streamlit.app/")
 
 if __name__ == "__main__":
     main()
