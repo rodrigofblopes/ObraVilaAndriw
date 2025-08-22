@@ -70,8 +70,12 @@ class IFCWebViewer:
                 'IfcFooting': {'r': 0.4, 'g': 0.2, 'b': 0.0}   # Marrom - Fundações
             }
             
-            # Processar cada elemento (limitado para performance)
-            for i, element in enumerate(structural_elements[:100]):  # Limitar para web
+            # Processar cada elemento (todos os elementos)
+            processed_count = 0
+            for i, element in enumerate(structural_elements):  # Processar todos os elementos
+                # Mostrar progresso a cada 50 elementos
+                if i % 50 == 0:
+                    print(f"📊 Processando elemento {i+1} de {len(structural_elements)}...")
                 try:
                     # Criar geometria do elemento
                     shape = ifcopenshell.geom.create_shape(settings, element)
@@ -96,13 +100,14 @@ class IFCWebViewer:
                                 'color': color,
                                 'visible': True
                             })
+                            processed_count += 1
                             
                 except Exception as e:
                     print(f"⚠️ Erro ao processar elemento {i}: {e}")
                     continue
             
             self.geometry_data = geometry_data
-            print(f"✅ {len(geometry_data['elements'])} elementos processados com sucesso!")
+            print(f"✅ {processed_count} de {len(structural_elements)} elementos processados com sucesso!")
             return geometry_data
             
         except Exception as e:
