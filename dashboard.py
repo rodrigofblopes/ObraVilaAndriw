@@ -43,6 +43,7 @@ st.set_page_config(
 
 # CSS responsivo otimizado para mobile e desktop
 st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
     /* Reset e configurações base */
     .stApp {
@@ -190,75 +191,193 @@ st.markdown("""
         border-left: 5px solid;
     }
     
-    /* MEDIA QUERIES PARA MOBILE */
+    /* MEDIA QUERIES PARA MOBILE - OTIMIZADAS */
     @media (max-width: 768px) {
-        /* Header mobile */
+        /* Header mobile otimizado */
         .main-header {
-            padding: 1rem;
+            padding: 1.2rem 1rem;
             margin-bottom: 1rem;
+            border-radius: 12px;
         }
         
         .main-header h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            line-height: 1.2;
+            margin-bottom: 0.3rem;
+        }
+        
+        .main-header p {
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+        
+        /* Abas mobile - melhor touch target */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 2px;
+            padding: 0.5rem 0;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            min-width: 110px;
+            min-height: 52px;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 2px;
+        }
+        
+        /* Métricas mobile - cards mais compactos */
+        .metric-card {
+            padding: 1.2rem 1rem;
+            margin-bottom: 0.8rem;
+            border-radius: 10px;
+        }
+        
+        /* Botões mobile - touch-friendly */
+        .stButton button {
+            width: 100%;
+            height: 52px;
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        /* Colunas mobile - layout vertical otimizado */
+        .row-widget.stHorizontal {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        /* Sidebar mobile - mais espaço */
+        .css-1d391kg {
+            padding: 0.8rem;
+        }
+        
+        /* Gráficos mobile - altura responsiva */
+        .js-plotly-plot {
+            height: 320px !important;
+            margin: 0.5rem 0;
+        }
+        
+        /* Tabelas mobile - scroll horizontal */
+        .dataframe {
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+        
+        /* Container mobile - padding otimizado */
+        .block-container {
+            padding: 1rem 0.8rem;
+            max-width: 100%;
+        }
+        
+        /* Cards de pavimento mobile */
+        .pavimento-card {
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+        }
+        
+        /* Filtros mobile - layout vertical */
+        .stHorizontal > div {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Expanders mobile */
+        .streamlit-expanderHeader {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+        
+        /* Métricas inline mobile */
+        .stMetric {
+            padding: 0.8rem;
+        }
+        
+        .stMetric > div {
+            text-align: center;
+        }
+        
+        .stMetric [data-testid="metric-container"] {
+            padding: 0.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        /* Extra small screens - otimização máxima */
+        .main-header {
+            padding: 1rem 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .main-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 0.2rem;
         }
         
         .main-header p {
             font-size: 0.9rem;
         }
         
-        /* Abas mobile */
+        /* Abas extra small */
         .stTabs [data-baseweb="tab"] {
-            min-width: 100px;
+            min-width: 90px;
+            min-height: 48px;
             padding: 10px 12px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin: 1px;
         }
         
-        /* Métricas mobile */
+        /* Cards mais compactos */
         .metric-card {
-            padding: 1rem;
-            margin-bottom: 0.8rem;
+            padding: 1rem 0.8rem;
+            margin-bottom: 0.6rem;
         }
         
-        /* Botões mobile */
+        /* Botões extra small */
         .stButton button {
-            width: 100%;
-            margin-bottom: 0.5rem;
+            height: 48px;
+            font-size: 0.95rem;
+            margin-bottom: 0.6rem;
         }
         
-        /* Colunas mobile - força layout vertical */
-        .row-widget.stHorizontal {
-            flex-direction: column;
-        }
-        
-        /* Sidebar mobile */
-        .css-1d391kg {
-            padding: 0.5rem;
-        }
-        
-        /* Gráficos mobile */
+        /* Gráficos extra small */
         .js-plotly-plot {
-            height: 300px !important;
+            height: 280px !important;
         }
         
-        /* Texto menor em mobile */
+        /* Container extra small */
+        .block-container {
+            padding: 0.8rem 0.6rem;
+        }
+        
+        /* Tabelas extra small */
         .dataframe {
             font-size: 0.8rem;
         }
         
-        /* Reduzir padding geral em mobile */
-        .block-container {
-            padding: 1rem 0.5rem;
+        /* Métricas extra small */
+        .stMetric {
+            padding: 0.6rem;
+        }
+        
+        /* Expanders extra small */
+        .streamlit-expanderHeader {
+            padding: 0.8rem;
+            font-size: 0.95rem;
         }
     }
     
-    @media (max-width: 480px) {
-        /* Extra small screens */
-        .main-header {
-            padding: 0.8rem;
+    @media (max-width: 360px) {
+        /* Muito pequenos - otimização extrema */
+        .main-header h1 {
+            font-size: 1.2rem;
         }
         
-        .main-header h1 {
-            font-size: 1.3rem;
+        .main-header p {
+            font-size: 0.85rem;
         }
         
         .stTabs [data-baseweb="tab"] {
@@ -267,18 +386,57 @@ st.markdown("""
             font-size: 0.8rem;
         }
         
-        .metric-card {
-            padding: 0.8rem;
-        }
-        
         .js-plotly-plot {
             height: 250px !important;
+        }
+        
+        .block-container {
+            padding: 0.6rem 0.4rem;
         }
     }
     
     /* Animações suaves */
     * {
         transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    
+    /* Melhorias para touch e acessibilidade mobile */
+    @media (hover: none) and (pointer: coarse) {
+        /* Touch devices - aumentar área de toque */
+        .stButton button,
+        .stTabs [data-baseweb="tab"],
+        .streamlit-expanderHeader {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Melhor feedback visual para touch */
+        .stButton button:active,
+        .stTabs [data-baseweb="tab"]:active {
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
+        }
+        
+        /* Scroll suave para mobile */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Prevenir zoom em inputs */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+    }
+    
+    /* Melhorias para telas de alta densidade */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .main-header {
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+        }
+        
+        .metric-card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
     }
     
     /* Melhorar contraste para acessibilidade */
@@ -575,13 +733,13 @@ def main():
     dados = carregar_dados_vila_andriw()
     
 
-    # Abas principais
+    # Abas principais - otimizadas para mobile
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "🏠 Visão Geral", 
-        "🏢 Por Pavimento", 
-        "🔧 Por Elemento", 
-        "💰 Análise Detalhada",
-        "🎮 Visualização 3D"
+        "📊 Geral", 
+        "🏢 Pavimentos", 
+        "🔧 Elementos", 
+        "💰 Financeiro",
+        "🎮 3D"
     ])
     
     with tab1:
@@ -664,17 +822,17 @@ def por_pavimento(dados):
     # Filtros interativos
     st.markdown("### 🔍 Filtros de Pavimento")
     
-    # Layout dos filtros
-    col_filtro1, col_filtro2, col_filtro3, col_filtro4 = st.columns(4)
+    # Layout dos filtros - responsivo
+    col_filtro1, col_filtro2, col_filtro3, col_filtro4 = st.columns([1, 1, 1, 1])
     
     with col_filtro1:
-        show_todos = st.button("📊 Todos", use_container_width=True)
+        show_todos = st.button("📊 Todos", use_container_width=True, help="Mostrar todos os pavimentos")
     with col_filtro2:
-        show_fundacao = st.button("🏗️ Fundação", use_container_width=True)
+        show_fundacao = st.button("🏗️ Fundação", use_container_width=True, help="Filtrar apenas fundação")
     with col_filtro3:
-        show_terreo = st.button("🏘️ Térreo", use_container_width=True)
+        show_terreo = st.button("🏘️ Térreo", use_container_width=True, help="Filtrar apenas térreo")
     with col_filtro4:
-        show_superior = st.button("🏠 Superior", use_container_width=True)
+        show_superior = st.button("🏠 Superior", use_container_width=True, help="Filtrar apenas superior")
     
     # Determinar filtro ativo
     filtro_ativo = "Todos"
@@ -721,23 +879,21 @@ def por_pavimento(dados):
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Métricas resumo do pavimento
-            col1, col2, col3, col4 = st.columns(4)
+            # Métricas resumo do pavimento - responsivas
+            col1, col2 = st.columns(2)
             
             with col1:
                 st.metric("💰 Custo Total", formatar_moeda(pavimento['total']))
-            
-            with col2:
+                
                 # Calcular participação no projeto
                 participacao = (pavimento['total'] / dados['resumo']['custo_total']) * 100
                 st.metric("📊 Participação", f"{participacao:.1f}%")
             
-            with col3:
+            with col2:
                 # Número de elementos
                 num_elementos = len([e for e in pavimento['elementos'].values() if e > 0])
                 st.metric("🔧 Elementos", f"{num_elementos} tipos")
-            
-            with col4:
+                
                 # Elemento principal (maior custo)
                 maior_elemento = max(pavimento['elementos'].items(), key=lambda x: x[1])
                 st.metric("🎯 Principal", maior_elemento[0].title())
@@ -947,14 +1103,16 @@ def analise_detalhada(dados):
         fig_acumulado.update_layout(height=400)
         st.plotly_chart(fig_acumulado, use_container_width=True)
     
-    # Seção de Resumo Financeiro por Pavimento
+    # Seção de Resumo Financeiro por Pavimento - responsiva
     st.markdown("---")
     st.markdown("### 🏢 Resumo Financeiro por Pavimento")
     
-    col_fund, col_terr, col_sup = st.columns(3)
-    
     for i, pavimento in enumerate(dados['pavimentos']):
-        col = [col_fund, col_terr, col_sup][i]
+        # Layout responsivo - 1 coluna em mobile, 3 em desktop
+        if i % 3 == 0:
+            col_fund, col_terr, col_sup = st.columns(3)
+        
+        col = [col_fund, col_terr, col_sup][i % 3]
         
         with col:
             # Card estilizado para cada pavimento
@@ -1005,25 +1163,27 @@ def analise_detalhada(dados):
     # Usar dados reais dos serviços
     df_servicos = pd.DataFrame(dados['servicos'])
     
-    # Adicionar filtros interativos
-    col_filt1, col_filt2, col_filt3 = st.columns(3)
+    # Adicionar filtros interativos - responsivos
+    col_filt1, col_filt2 = st.columns(2)
     
     with col_filt1:
         filtro_pavimento = st.selectbox(
             "Filtrar por Pavimento:",
-            ['Todos'] + df_servicos['pavimento'].unique().tolist()
+            ['Todos'] + df_servicos['pavimento'].unique().tolist(),
+            help="Selecione um pavimento específico"
+        )
+        
+        filtro_elemento = st.selectbox(
+            "Filtrar por Elemento:",
+            ['Todos'] + df_servicos['elemento'].unique().tolist(),
+            help="Selecione um elemento específico"
         )
     
     with col_filt2:
-        filtro_elemento = st.selectbox(
-            "Filtrar por Elemento:",
-            ['Todos'] + df_servicos['elemento'].unique().tolist()
-        )
-    
-    with col_filt3:
         ordem = st.selectbox(
             "Ordenar por:",
-            ['Valor Total (maior)', 'Valor Total (menor)', 'Pavimento', 'Elemento']
+            ['Valor Total (maior)', 'Valor Total (menor)', 'Pavimento', 'Elemento'],
+            help="Escolha como ordenar os resultados"
         )
     
     # Aplicar filtros
@@ -1043,19 +1203,17 @@ def analise_detalhada(dados):
     else:
         df_filtrado = df_filtrado.sort_values('elemento')
     
-    # Mostrar estatísticas do filtro
+    # Mostrar estatísticas do filtro - responsivas
     total_filtrado = df_filtrado['total'].sum()
     num_itens = len(df_filtrado)
     
-    col_stat1, col_stat2, col_stat3, col_stat4 = st.columns(4)
+    col_stat1, col_stat2 = st.columns(2)
     with col_stat1:
         st.metric("📊 Itens mostrados", num_itens)
-    with col_stat2:
-        st.metric("💰 Total filtrado", formatar_moeda(total_filtrado))
-    with col_stat3:
         perc_total = (total_filtrado / dados['resumo']['custo_total']) * 100
         st.metric("📈 % do projeto", f"{perc_total:.1f}%")
-    with col_stat4:
+    with col_stat2:
+        st.metric("💰 Total filtrado", formatar_moeda(total_filtrado))
         material_filtrado = df_filtrado['material'].sum()
         st.metric("🔧 Material filtrado", formatar_moeda(material_filtrado))
     
