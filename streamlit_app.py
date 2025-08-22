@@ -1,4 +1,4 @@
-from app import main
+from dashboard import main
 
 if __name__ == "__main__":
     main()
