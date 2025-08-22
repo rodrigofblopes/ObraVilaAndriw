@@ -49,6 +49,16 @@ st.markdown("""
         background-color: #f8fafc;
     }
     
+    /* Minimizar elementos do Streamlit Cloud */
+    .stDeployButton {
+        display: none !important;
+    }
+    
+    /* Ocultar alguns elementos de navegação */
+    .stApp > header {
+        background-color: transparent !important;
+    }
+    
     /* Header principal - responsivo */
     .main-header {
         background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);

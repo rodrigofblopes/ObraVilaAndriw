@@ -49,7 +49,7 @@ def executar_app():
     try:
         # Executa o Streamlit
         subprocess.run([
-            sys.executable, "-m", "streamlit", "run", "app.py",
+            sys.executable, "-m", "streamlit", "run", "dashboard.py",
             "--server.headless=false",
             "--server.port=8501",
             "--browser.gatherUsageStats=false"
@@ -65,8 +65,8 @@ def main():
     print("="*50)
     
     # Verifica se está no diretório correto
-    if not os.path.exists("app.py"):
-        print("❌ Erro: arquivo app.py não encontrado!")
+    if not os.path.exists("dashboard.py"):
+        print("❌ Erro: arquivo dashboard.py não encontrado!")
         print("📁 Certifique-se de estar no diretório correto")
         sys.exit(1)
     
