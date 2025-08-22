@@ -10,11 +10,15 @@ import io
 import os
 import tempfile
 
-# Importar visualizador IFC personalizado
+# Importar visualizador IFC personalizado - versão simplificada para Cloud
+HAS_IFC_VIEWER = False
 try:
+    # Tentar importar apenas se estiver disponível
+    import ifcopenshell
     from ifc_web_viewer import create_ifc_viewer, IFCWebViewer
     HAS_IFC_VIEWER = True
 except ImportError:
+    st.info("ℹ️ Visualizador IFC não disponível - usando modo simplificado")
     HAS_IFC_VIEWER = False
 
 # Configuração da página
@@ -1263,136 +1267,9 @@ def analise_detalhada(dados):
 def carregar_modelo_ifc_real():
     """Carrega o modelo 3D real do arquivo VilaAndriw.ifc"""
     
-    try:
-        # Verificar se ifcopenshell está disponível
-        import ifcopenshell
-        import ifcopenshell.geom
-        
-        # Verificar se o arquivo existe
-        ifc_path = "VilaAndriw.ifc"
-        if not os.path.exists(ifc_path):
-            ifc_path = "ifcopenshell/VilaAndriw.ifc"
-        
-        if not os.path.exists(ifc_path):
-            st.error("❌ Arquivo VilaAndriw.ifc não encontrado!")
-            return gerar_modelo_3d_esquematico()
-        
-        # Carregar arquivo IFC
-        with st.spinner("🔄 Carregando modelo IFC real..."):
-            ifc_file = ifcopenshell.open(ifc_path)
-            
-            # Configurar settings de geometria
-            settings = ifcopenshell.geom.settings()
-            settings.set(settings.USE_WORLD_COORDS, True)
-            
-            # Extrair elementos estruturais
-            elementos_3d = []
-            
-            # Buscar elementos estruturais
-            elementos_estruturais = (
-                ifc_file.by_type("IfcBeam") +      # Vigas
-                ifc_file.by_type("IfcColumn") +    # Pilares  
-                ifc_file.by_type("IfcSlab") +      # Lajes
-                ifc_file.by_type("IfcWall") +      # Paredes
-                ifc_file.by_type("IfcFooting")     # Fundações
-            )
-            
-            cores_elementos = {
-                'IfcBeam': 'orange',      # Vigas - laranja
-                'IfcColumn': 'red',       # Pilares - vermelho
-                'IfcSlab': 'lightblue',   # Lajes - azul claro
-                'IfcWall': 'gray',        # Paredes - cinza
-                'IfcFooting': 'brown'     # Fundações - marrom
-            }
-            
-            nomes_elementos = {
-                'IfcBeam': '🟫 Vigas',
-                'IfcColumn': '🏢 Pilares', 
-                'IfcSlab': '🟧 Lajes',
-                'IfcWall': '🧱 Paredes',
-                'IfcFooting': '🏗️ Fundações'
-            }
-            
-            fig = go.Figure()
-            elementos_processados = {}
-            
-            for elemento in elementos_estruturais[:50]:  # Limitar para performance
-                try:
-                    tipo = elemento.is_a()
-                    
-                    # Obter geometria
-                    shape = ifcopenshell.geom.create_shape(settings, elemento)
-                    geometry = shape.geometry
-                    
-                    # Extrair vértices
-                    vertices = geometry.verts
-                    faces = geometry.faces
-                    
-                    if len(vertices) >= 9 and len(faces) >= 3:  # Verificar se há dados suficientes
-                        # Converter para arrays numpy
-                        vertices_array = np.array(vertices).reshape(-1, 3)
-                        faces_array = np.array(faces).reshape(-1, 3)
-                        
-                        # Extrair coordenadas
-                        x = vertices_array[:, 0]
-                        y = vertices_array[:, 1] 
-                        z = vertices_array[:, 2]
-                        
-                        # Extrair faces
-                        i = faces_array[:, 0]
-                        j = faces_array[:, 1]
-                        k = faces_array[:, 2]
-                        
-                        # Adicionar ao gráfico
-                        nome_grupo = nomes_elementos.get(tipo, tipo)
-                        cor = cores_elementos.get(tipo, 'blue')
-                        
-                        # Verificar se já adicionamos este tipo (para controlar legenda)
-                        show_legend = tipo not in elementos_processados
-                        elementos_processados[tipo] = True
-                        
-                        fig.add_trace(go.Mesh3d(
-                            x=x, y=y, z=z,
-                            i=i, j=j, k=k,
-                            color=cor,
-                            opacity=0.8,
-                            name=nome_grupo,
-                            showlegend=show_legend,
-                            legendgroup=tipo
-                        ))
-                        
-                except Exception as e:
-                    continue  # Ignorar elementos com erro de geometria
-            
-            # Se não conseguiu carregar nenhum elemento, usar modelo esquemático
-            if len(fig.data) == 0:
-                st.warning("⚠️ Não foi possível extrair geometria do IFC. Usando modelo esquemático.")
-                return gerar_modelo_3d_esquematico()
-            
-            # Configurar layout
-            fig.update_layout(
-                title="🏗️ Modelo 3D Real - Vila Andriw (IFC)",
-                scene=dict(
-                    xaxis_title="X (metros)",
-                    yaxis_title="Y (metros)", 
-                    zaxis_title="Z (metros)",
-                    camera=dict(
-                        eye=dict(x=1.5, y=1.5, z=1.5)
-                    ),
-                    aspectmode='data'
-                ),
-                height=600,
-                showlegend=True
-            )
-            
-            return fig
-            
-    except ImportError:
-        st.error("❌ Biblioteca ifcopenshell não disponível!")
-        return gerar_modelo_3d_esquematico()
-    except Exception as e:
-        st.error(f"❌ Erro ao carregar IFC: {str(e)}")
-        return gerar_modelo_3d_esquematico()
+    # No Streamlit Cloud, sempre usar modelo esquemático
+    st.info("ℹ️ Usando modelo 3D esquemático (IFC não disponível no Cloud)")
+    return gerar_modelo_3d_esquematico()
 
 def gerar_modelo_3d_esquematico():
     """Gera um modelo 3D esquemático como fallback"""
@@ -1502,8 +1379,28 @@ def visualizacao_3d():
     
     # Verificar se visualizador IFC está disponível
     if not HAS_IFC_VIEWER:
-        st.error("❌ Visualizador IFC não disponível. Instale as dependências necessárias.")
-        st.code("pip install ifcopenshell", language="bash")
+        st.info("ℹ️ Visualizador IFC não disponível no Streamlit Cloud")
+        st.markdown("### 🏗️ Modelo 3D Esquemático")
+        
+        # Gerar modelo esquemático
+        fig_3d = gerar_modelo_3d_esquematico()
+        st.plotly_chart(fig_3d, use_container_width=True)
+        
+        st.markdown("""
+        ### 📋 Informações do Projeto
+        
+        **🏢 Pavimentos:** 3 (Fundação, Térreo, Superior)
+        **🏗️ Elementos:** 4 tipos (Vigas, Pilares, Lajes, Fundações)
+        **💰 Custo Total:** R$ 126.544,18
+        **📐 Área:** ~40m²
+        **🏗️ Altura:** 4.5m
+        
+        ### 🔧 Especificações Técnicas
+        - **Concreto:** C25/C30 MPa
+        - **Aço:** CA-50
+        - **Fundação:** Sapatas corridas
+        - **Lajes:** Nervuradas e maciças
+        """)
         return
     
     # Status de arquivos disponíveis
